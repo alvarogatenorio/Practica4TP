@@ -41,6 +41,22 @@ public class AtaxxMove extends GameMove {
 	protected int col;
 
 	/**
+	 * The row which the piece is moved from.
+	 * 
+	 * <p>
+	 * Fila desde la que se intenta mover la pieza.
+	 * */
+	protected int oldRow;
+	
+	/**
+	 * The column which the piece is moved from.
+	 * 
+	 * <p>
+	 * Columna desde la que se intenta mover la pieza.
+	 */
+	protected int oldCol;
+	
+	/**
 	 * This constructor should be used ONLY to get an instance of
 	 * {@link ConnectNMove} to generate game moves from strings by calling
 	 * {@link #fromString(String)}
@@ -51,7 +67,6 @@ public class AtaxxMove extends GameMove {
 	 * el metodo {@link #fromString(String)}
 	 * 
 	 */
-
 	public AtaxxMove() {
 	}
 
@@ -76,18 +91,45 @@ public class AtaxxMove extends GameMove {
 	 *            <p>
 	 *            Ficha a colocar en ({@code row},{@code col}).
 	 */
-	public AtaxxMove(int row, int col, Piece p) {
+	
+	/**
+	 * @param oldRow
+	 * @param oldCol
+	 * @param row
+	 * @param col
+	 * @param p
+	 */
+	public AtaxxMove(int oldRow, int oldCol, int row, int col, Piece p) {
 		super(p);
+		this.oldRow = oldRow;
+		this.oldCol = oldCol;
 		this.row = row;
 		this.col = col;
 	}
 
 	@Override
 	public void execute(Board board, List<Piece> pieces) {
-		if (board.getPosition(row, col) == null) {
+		/*if (board.getPosition(row, col) == null) {
 			board.setPosition(row, col, getPiece());
 		} else {
 			throw new GameError("position (" + row + "," + col + ") is already occupied!");
+		}
+		*/
+		if(board.getPosition(row, col)== null){
+			if(){
+				board.setPosition(row, col, getPiece());
+			}
+			else if () {
+				board.setPosition(row, col, getPiece());
+				board.setPosition(row, col, null); //Aqui hay que poner la posicion antigua, en row y col.
+			}
+			else {
+				throw new GameError("position ("+ row +"," + col + ") is illegal!");
+			}
+			
+		}
+		else {
+			throw new GameError("position ("+ row +"," + col + ") is already occupied!");
 		}
 	}
 
