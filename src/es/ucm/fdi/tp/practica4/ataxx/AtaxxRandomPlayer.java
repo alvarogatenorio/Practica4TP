@@ -2,15 +2,16 @@ package es.ucm.fdi.tp.practica4.ataxx;
 
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import es.ucm.fdi.tp.basecode.bgame.Utils;
 import es.ucm.fdi.tp.basecode.bgame.control.Player;
 import es.ucm.fdi.tp.basecode.bgame.model.Board;
-import es.ucm.fdi.tp.basecode.bgame.model.GameError;
 import es.ucm.fdi.tp.basecode.bgame.model.GameMove;
 import es.ucm.fdi.tp.basecode.bgame.model.GameRules;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
+
 
 /**
  * A random player for ConnectN.
@@ -28,11 +29,10 @@ public class AtaxxRandomPlayer extends Player { //Hay que cambiar el nombre a Ra
 
 	@Override
 	public GameMove requestMove(Piece p, Board board, List<Piece> pieces, GameRules rules) {
-		
-		
-		//Funcion a cambiar, podemos hacer que se cree una lista con las jugadas posibles, y luego coger una aleatorio. 
-		
-		return null;
+		List<GameMove> moves = new ArrayList<GameMove>();
+		moves = validMoves(board, pieces, p);
+		int random=Utils.randomInt(moves.size());
+		return moves.get(random);
 	}
 
 	/**

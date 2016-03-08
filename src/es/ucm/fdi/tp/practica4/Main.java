@@ -37,8 +37,8 @@ import es.ucm.fdi.tp.practica4.ataxx.AtaxxFactory;
  * Esta es la clase con el metodo main de inicio del programa. Se utiliza la
  * libreria Commons-CLI para leer argumentos de la linea de ordenes: el juego al
  * que se quiere jugar y la lista de jugadores. Puedes encontrar mas
- * información sobre esta libreria en
- * {@link https://commons.apache.org/proper/commons-cli/} .
+ * información sobre esta libreria en {@link https
+ * ://commons.apache.org/proper/commons-cli/} .
  */
 public class Main {
 
@@ -81,8 +81,8 @@ public class Main {
 		/*
 		 * A�adimos enumerado de ataxx
 		 */
-		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe("attt",
-				"Advanced Tic-Tac-Toe"), Ataxx("ataxx", "Ataxx");
+		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe(
+				"attt", "Advanced Tic-Tac-Toe"), Ataxx("ataxx", "Ataxx");
 
 		private String id;
 		private String desc;
@@ -303,11 +303,11 @@ public class Main {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 			parseHelpOption(line, cmdLineOptions);
 			parseDimOptionn(line);
+			parseOsbtaclesOption(line);
 			parseGameOption(line);
 			parseViewOption(line);
 			parseMultiViewOption(line);
 			parsePlayersOptions(line);
-			parseOsbtaclesOption(line);
 
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -339,7 +339,8 @@ public class Main {
 
 	private static Option constructMlutiViewOption() {
 		return new Option("m", "multiviews", false,
-				"Create a separate view for each player (valid only when using the " + ViewInfo.WINDOW + " view)");
+				"Create a separate view for each player (valid only when using the "
+						+ ViewInfo.WINDOW + " view)");
 	}
 
 	/**
@@ -418,7 +419,8 @@ public class Main {
 		for (PlayerMode i : PlayerMode.values()) {
 			optionInfo += i.getId() + " [for " + i.getDesc() + "] ";
 		}
-		optionInfo += "). If B is not given, the default mode '" + DEFAULT_PLAYERMODE.getId()
+		optionInfo += "). If B is not given, the default mode '"
+				+ DEFAULT_PLAYERMODE.getId()
 				+ "' is used. If this option is not given a default list of pieces from the corresponding game is used, each assigmed the mode '"
 				+ DEFAULT_PLAYERMODE.getId() + "'.";
 
@@ -444,7 +446,8 @@ public class Main {
 	 *             Si se proporciona un valor invalido (@see
 	 *             {@link #constructPlayersOption()}).
 	 */
-	private static void parsePlayersOptions(CommandLine line) throws ParseException {
+	private static void parsePlayersOptions(CommandLine line)
+			throws ParseException {
 
 		String playersVal = line.getOptionValue("p");
 
@@ -478,10 +481,12 @@ public class Main {
 					if (selectedMode != null) {
 						playerModes.add(selectedMode);
 					} else {
-						throw new ParseException("Invalid player mode in '" + player + "'");
+						throw new ParseException("Invalid player mode in '"
+								+ player + "'");
 					}
 				} else {
-					throw new ParseException("Invalid player information '" + player + "'");
+					throw new ParseException("Invalid player information '"
+							+ player + "'");
 				}
 			}
 		}
@@ -561,15 +566,20 @@ public class Main {
 			break;
 		case Ataxx:
 			if (dimRows != null && dimCols != null && dimRows == dimCols) {
-				/*Create one specified by parameter.*/
-				gameFactory = new AtaxxFactory(dimRows);
+				/* Create one specified by parameter. */
+				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0) {
+					gameFactory = new AtaxxFactory(dimRows, DEFAULT_OBSTACLES);
+				} else {
+					gameFactory = new AtaxxFactory(dimRows, obstacles);
+				}
 			} else {
-				/*The parameters are wrong, create one by default.*/
+				/* The parameters are wrong, create one by default. */
 				gameFactory = new AtaxxFactory();
 			}
 			break;
 		default:
-			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
+			throw new UnsupportedOperationException(
+					"Something went wrong! This program point should be unreachable!");
 		}
 
 	}
@@ -585,7 +595,10 @@ public class Main {
 	 *         Objeto {@link Option} de esta opcion.
 	 */
 	private static Option constructDimensionOption() {
-		return new Option("d", "dim", true,
+		return new Option(
+				"d",
+				"dim",
+				true,
 				"The board size (if allowed by the selected game). It must has the form ROWSxCOLS.");
 	}
 
@@ -656,27 +669,32 @@ public class Main {
 	private static void parseHelpOption(CommandLine line, Options cmdLineOptions) {
 		if (line.hasOption("h")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp(Main.class.getCanonicalName(), cmdLineOptions, true);
+			formatter.printHelp(Main.class.getCanonicalName(), cmdLineOptions,
+					true);
 			System.exit(0);
 		}
 	}
 
 	private static Option constructObstaclesOption() {
-		Option opt = new Option("o", "obstacles", true, "The number of obstacles in the game (if it allows it)");
+		Option opt = new Option("o", "obstacles", true,
+				"The number of obstacles in the game (if it allows it)");
 		return opt;
 	}
 
-	private static void parseOsbtaclesOption(CommandLine line) throws ParseException {
+	private static void parseOsbtaclesOption(CommandLine line)
+			throws ParseException {
 		String obs = line.getOptionValue("o");
 		if (obs != null) {
 			try {
 				obstacles = Integer.parseInt(obs);
-				//REVISAR
+				// REVISAR
 				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0) {
-					throw new ParseException("Invalid number of obstacles:" + obstacles);
+					throw new ParseException("Invalid number of obstacles:"
+							+ obstacles);
 				}
 			} catch (NumberFormatException e) {
-				throw new ParseException("Invalid number of obstacles:" + obstacles);
+				throw new ParseException("Invalid number of obstacles:"
+						+ obstacles);
 			}
 		}
 	}
@@ -720,7 +738,8 @@ public class Main {
 			throw new UnsupportedOperationException(
 					"Swing Views are not supported in startGameNoMVC!! Please use startGameMVC instead.");
 		default:
-			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
+			throw new UnsupportedOperationException(
+					"Something went wrong! This program point should be unreachable!");
 		}
 
 		c.start();
@@ -762,10 +781,12 @@ public class Main {
 			gameFactory.createConsoleView(g, c);
 			break;
 		case WINDOW:
-			throw new UnsupportedOperationException(
-					"Swing " + (multiviews ? "Multiviews" : "Views") + " are not supported yet! ");
+			throw new UnsupportedOperationException("Swing "
+					+ (multiviews ? "Multiviews" : "Views")
+					+ " are not supported yet! ");
 		default:
-			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
+			throw new UnsupportedOperationException(
+					"Something went wrong! This program point should be unreachable!");
 		}
 
 		c.start();

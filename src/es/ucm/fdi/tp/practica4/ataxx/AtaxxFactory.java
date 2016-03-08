@@ -22,11 +22,14 @@ public class AtaxxFactory implements GameFactory {
 
 	private int dim;
 	
+	private int obstacles;
+	
 	/**
 	 * Constructor without arguments, when the main parameters are
 	 * wrong, we create an Ataxx board of 5x5 by default.*/
 	public AtaxxFactory() {
 		this.dim = 5;
+		this.obstacles=4;
 	}
 	
 	/**
@@ -38,7 +41,7 @@ public class AtaxxFactory implements GameFactory {
 	 * are bad (less than five), To avoid future errors, we have to make sure
 	 * that the arguments here are correct..
 	 */
-	public AtaxxFactory(int dim) {
+	public AtaxxFactory(int dim, int obstacles) {
 		//Illegal dimensions cases (treat before here)!!
 		if (dim < 5) {
 			throw new GameError("Dimension must be at least 5: " + dim);
@@ -48,12 +51,13 @@ public class AtaxxFactory implements GameFactory {
 		}
 		else {
 			this.dim = dim;
+			this.obstacles = obstacles;
 		}
 	}
 
 	@Override
 	public GameRules gameRules() {
-		return new AtaxxRules(dim);
+		return new AtaxxRules(dim, obstacles);
 	}
 
 	@Override

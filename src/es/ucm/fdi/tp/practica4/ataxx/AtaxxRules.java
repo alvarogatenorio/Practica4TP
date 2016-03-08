@@ -12,6 +12,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.GameRules;
 import es.ucm.fdi.tp.basecode.bgame.model.Pair;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 
+
 /**
  * Rules for Ataxx game.
  * <ul>
@@ -42,8 +43,10 @@ public class AtaxxRules implements GameRules {
 	protected final Pair<State, Piece> gameInPlayResult = new Pair<State, Piece>(State.InPlay, null);
 
 	private int dim;
+	
+	private int obstacles;
 
-	public AtaxxRules(int dim) {
+	public AtaxxRules(int dim, int obstacles) {
 		if (dim < 5) {
 			throw new GameError("Dimension must be at least 5: " + dim);
 		} else if (dim % 2 == 0) {
@@ -51,6 +54,7 @@ public class AtaxxRules implements GameRules {
 		} else {
 			this.dim = dim;
 		}
+		this.obstacles= obstacles;
 	}
 
 	@Override
@@ -85,6 +89,7 @@ public class AtaxxRules implements GameRules {
 		}
 
 		// Faltan añadir los obstaculos.
+		
 
 		return board;
 	}
@@ -124,14 +129,35 @@ public class AtaxxRules implements GameRules {
 	public double evaluate(Board board, List<Piece> playersPieces, Piece turn) {
 		return 0;
 	}
-
+	private static final int deltas [][] = {
+		{0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,1}, {-1,0}, {-1,-1},
+		{-2,-2}, {-2,-1}, {-2,0}, {-2,1}, {-2,2}, {-1,-2}, {-1,2}, {0,-2},
+		{0,2}, {1,-2}, {1,2}, {2,-2}, {2,-1}, {2,0}, {2,1}, {2,2}
+	};
+	
+	private boolean dentro(int x, int y){
+		return x>=0 && y>=0 && x<dim && y<dim;
+	}
+	
 	@Override
 	public List<GameMove> validMoves(Board board, List<Piece> playersPieces, Piece turn) {
-		// Funcion a cambiar nuestros movimientos validos no son estos.
-
 		List<GameMove> moves = new ArrayList<GameMove>();
-
+		for(int i = 0; i<board.getRows(); i++){
+			for(int j = 0; j<board.getCols(); j++){
+				if(board.getPosition(i, j)==turn){ 
+					for(int [] ds: deltas){
+						int x = i + ds[0];
+						int y = j + ds[1];
+						if(dentro(x,y) && board.getPosition(x, y)!=null){ 
+							//Falta que compruebe que no es un OBSTACULO...... NO SE COMO HACERLO TAMBIEN PASA EN ATAXX MOVE
+							moves.add(new AtaxxMove(i, j, x, y, turn));
+						}
+						
+					}
+					
+				}
+			}
+		}
 		return moves;
 	}
-
 }

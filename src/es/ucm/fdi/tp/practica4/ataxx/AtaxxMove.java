@@ -1,13 +1,12 @@
 package es.ucm.fdi.tp.practica4.ataxx;
 
-
-
 import java.util.List;
 
 import es.ucm.fdi.tp.basecode.bgame.model.Board;
 import es.ucm.fdi.tp.basecode.bgame.model.GameError;
 import es.ucm.fdi.tp.basecode.bgame.model.GameMove;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
+import es.ucm.fdi.tp.basecode.connectN.ConnectNMove;
 
 /**
  * A Class representing a move for ConnectN.
@@ -47,7 +46,7 @@ public class AtaxxMove extends GameMove {
 	 * Fila desde la que se intenta mover la pieza.
 	 * */
 	protected int oldRow;
-	
+
 	/**
 	 * The column which the piece is moved from.
 	 * 
@@ -55,7 +54,7 @@ public class AtaxxMove extends GameMove {
 	 * Columna desde la que se intenta mover la pieza.
 	 */
 	protected int oldCol;
-	
+
 	/**
 	 * This constructor should be used ONLY to get an instance of
 	 * {@link ConnectNMove} to generate game moves from strings by calling
@@ -91,7 +90,7 @@ public class AtaxxMove extends GameMove {
 	 *            <p>
 	 *            Ficha a colocar en ({@code row},{@code col}).
 	 */
-	
+
 	/**
 	 * @param oldRow
 	 * @param oldCol
@@ -99,7 +98,8 @@ public class AtaxxMove extends GameMove {
 	 * @param col
 	 * @param p
 	 */
-	public AtaxxMove(int oldRow, int oldCol, int row, int col, Piece p) {
+	public AtaxxMove(int oldRow, int oldCol, int row, int col, Piece p) { 
+		//AQUI HAY QUE AÑADIR UNA EXCEPCION PORQUE SI EL MOVIMIENTO TIENE UN DISTANCIA MAYOR DE DOS HACEMOS QUE NO SE PUEDA CREAR.
 		super(p);
 		this.oldRow = oldRow;
 		this.oldCol = oldCol;
@@ -109,37 +109,57 @@ public class AtaxxMove extends GameMove {
 
 	@Override
 	public void execute(Board board, List<Piece> pieces) {
-		/*if (board.getPosition(row, col) == null) {
-			board.setPosition(row, col, getPiece());
+		/*
+		 * if (board.getPosition(row, col) == null) { board.setPosition(row,
+		 * col, getPiece()); } else { throw new GameError("position (" + row +
+		 * "," + col + ") is already occupied!"); }
+		 */
+		if (board.getPosition(row, col) == null) {
+			if (maximum() == 1) {
+				board.setPosition(row, col, getPiece());
+				transformAdjecents(board, pieces, oldRow, oldCol);
+
+			} else if (maximum() == 2) {
+				board.setPosition(row, col, getPiece());
+				board.setPosition(oldRow, oldCol, null);
+			} else {
+				throw new GameError("position (" + row + "," + col
+						+ ") is illegal!");
+			}
+
 		} else {
-			throw new GameError("position (" + row + "," + col + ") is already occupied!");
-		}
-		*/
-		if(board.getPosition(row, col)== null){
-			if(maximum()==1){
-				board.setPosition(row, col, getPiece());
-			}
-			else if (maximum()==2) {
-				board.setPosition(row, col, getPiece());
-				board.setPosition(oldRow, oldCol, null); //Aqui hay que poner la posicion antigua, en row y col.
-			}
-			else {
-				throw new GameError("position ("+ row +"," + col + ") is illegal!");
-			}
-			
-		}
-		else {
-			throw new GameError("position ("+ row +"," + col + ") is already occupied!");
+			throw new GameError("position (" + row + "," + col
+					+ ") is already occupied!");
 		}
 	}
-	
-	private int maximum(){
+
+	private int maximum() {
 		int maximum;
-		maximum = Math.abs(oldRow-row);
-		if(maximum<Math.abs(oldCol-col)){
-		maximum= Math.abs(oldCol-col);	
+		maximum = Math.abs(oldRow - row);
+		if (maximum < Math.abs(oldCol - col)) {
+			maximum = Math.abs(oldCol - col);
 		}
 		return maximum;
+	}
+
+	private static final int deltas[][] = { { 0, 1 }, { 1, 1 }, { 1, 0 },
+			{ 1, -1 }, { 0, -1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
+
+	private boolean dentro(int x, int y, int dim) {
+		return x >= 0 && y >= 0 && x < dim && y < dim;
+	}
+
+	private void transformAdjecents(Board board, List<Piece> pieces,
+			int oldRow, int oldCol) {
+		for (int[] ds : deltas) {
+			int x = oldRow + ds[0];
+			int y = oldCol + ds[1];
+			if (dentro(x, y, board.getRows())
+					&& board.getPosition(x, y) != null) {
+				// Falta que compruebe que no es un OBSTACULO...... NO SE COMO HACERLO TAMBIEN PASA EN ATAXX RULES
+				board.setPosition(x, y, getPiece());
+			}
+		}
 	}
 
 	/**
@@ -191,7 +211,8 @@ public class AtaxxMove extends GameMove {
 	 *            <p>
 	 *            Columna del nuevo movimiento.
 	 */
-	protected GameMove createMove(int oldRow, int oldCol, int row, int col, Piece p) {
+	protected GameMove createMove(int oldRow, int oldCol, int row, int col,
+			Piece p) {
 		return new AtaxxMove(oldRow, oldCol, row, col, p);
 	}
 
@@ -205,7 +226,8 @@ public class AtaxxMove extends GameMove {
 		if (getPiece() == null) {
 			return help();
 		} else {
-			return "Place a piece '" + getPiece() + "' at (" + row + "," + col + ")";
+			return "Place a piece '" + getPiece() + "' at (" + row + "," + col
+					+ ")";
 		}
 	}
 }
