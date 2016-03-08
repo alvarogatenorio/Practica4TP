@@ -64,7 +64,7 @@ public class AtaxxFactory implements GameFactory {
 
 	@Override
 	public Player createRandomPlayer() {
-		return new AtaxxPlayer();
+		return new AtaxxRandomPlayer();
 	}
 
 	@Override

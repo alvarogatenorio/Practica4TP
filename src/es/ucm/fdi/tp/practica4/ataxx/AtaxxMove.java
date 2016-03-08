@@ -116,12 +116,12 @@ public class AtaxxMove extends GameMove {
 		}
 		*/
 		if(board.getPosition(row, col)== null){
-			if(){
+			if(maximum()==1){
 				board.setPosition(row, col, getPiece());
 			}
-			else if () {
+			else if (maximum()==2) {
 				board.setPosition(row, col, getPiece());
-				board.setPosition(row, col, null); //Aqui hay que poner la posicion antigua, en row y col.
+				board.setPosition(oldRow, oldCol, null); //Aqui hay que poner la posicion antigua, en row y col.
 			}
 			else {
 				throw new GameError("position ("+ row +"," + col + ") is illegal!");
@@ -131,6 +131,15 @@ public class AtaxxMove extends GameMove {
 		else {
 			throw new GameError("position ("+ row +"," + col + ") is already occupied!");
 		}
+	}
+	
+	private int maximum(){
+		int maximum;
+		maximum = Math.abs(oldRow-row);
+		if(maximum<Math.abs(oldCol-col)){
+		maximum= Math.abs(oldCol-col);	
+		}
+		return maximum;
 	}
 
 	/**
@@ -144,15 +153,17 @@ public class AtaxxMove extends GameMove {
 	@Override
 	public GameMove fromString(Piece p, String str) {
 		String[] words = str.split(" ");
-		if (words.length != 2) {
+		if (words.length != 4) {
 			return null;
 		}
 
 		try {
-			int row, col;
-			row = Integer.parseInt(words[0]);
-			col = Integer.parseInt(words[1]);
-			return createMove(row, col, p);
+			int oldRow, oldCol, row, col;
+			oldRow = Integer.parseInt(words[0]);
+			oldCol = Integer.parseInt(words[1]);
+			row = Integer.parseInt(words[2]);
+			col = Integer.parseInt(words[3]);
+			return createMove(oldRow, oldCol, row, col, p);
 		} catch (NumberFormatException e) {
 			return null;
 		}
@@ -180,8 +191,8 @@ public class AtaxxMove extends GameMove {
 	 *            <p>
 	 *            Columna del nuevo movimiento.
 	 */
-	protected GameMove createMove(int row, int col, Piece p) {
-		return new AtaxxMove(row, col, p);
+	protected GameMove createMove(int oldRow, int oldCol, int row, int col, Piece p) {
+		return new AtaxxMove(oldRow, oldCol, row, col, p);
 	}
 
 	@Override

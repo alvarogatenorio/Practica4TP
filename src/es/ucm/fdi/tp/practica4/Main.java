@@ -24,6 +24,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.GameError;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 import es.ucm.fdi.tp.basecode.connectN.ConnectNFactory;
 import es.ucm.fdi.tp.basecode.ttt.TicTacToeFactory;
+import es.ucm.fdi.tp.practica4.ataxx.AtaxxFactory;
 
 /**
  * This is the class with the main method for the board games application.
@@ -165,6 +166,10 @@ public class Main {
 	 * extraer los argumentos de la linea de ordenes. Depende del juego
 	 * seleccionado con la opcion -g (por defecto, {@link #DEFAULT_GAME}).
 	 */
+	
+	final private static Integer DEFAULT_OBSTACLES = 4;
+	
+	
 	private static GameFactory gameFactory;
 
 	/**
@@ -259,6 +264,12 @@ public class Main {
 	 * 
 	 * 
 	 */
+	
+	/**
+	 * mierda
+	 */
+	private static Integer obstacles;
+	
 	private static void parseArgs(String[] args) {
 
 		// define the valid command line options
@@ -271,10 +282,9 @@ public class Main {
 																// --multiviews
 		cmdLineOptions.addOption(constructPlayersOption()); // -p or --players
 		cmdLineOptions.addOption(constructDimensionOption()); // -d or --dim
-
-		// parse the command line as provided in args
-		//
+		cmdLineOptions.addOption(constructObstaclesOption()); // -o or --obstacles
 		CommandLineParser parser = new DefaultParser();
+		
 		try {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 			parseHelpOption(line, cmdLineOptions);
@@ -283,6 +293,7 @@ public class Main {
 			parseViewOption(line);
 			parseMultiViewOption(line);
 			parsePlayersOptions(line);
+			parseOsbtaclesOption(line);
 
 			// if there are some remaining arguments, then something wrong is
 			// provided in the command line!
@@ -534,6 +545,13 @@ public class Main {
 		case TicTacToe:
 			gameFactory = new TicTacToeFactory();
 			break;
+		case Ataxx:
+			if (dimRows != null && dimCols != null && dimRows == dimCols) {
+				gameFactory = new AtaxxFactory(dimRows);
+			} else {
+				gameFactory = new AtaxxFactory();
+			}
+			break;
 		default:
 			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
 		}
@@ -626,7 +644,27 @@ public class Main {
 			System.exit(0);
 		}
 	}
+	
+	private static Option constructObstaclesOption() {
 
+		Option opt = new Option("o", "obstacles", true, "The number of obstacles in the game(if needed)");
+		return opt;
+	}
+	
+	private static void parseOsbtaclesOption(CommandLine line) throws ParseException {
+		String obsVal = line.getOptionValue("o");
+		if (obsVal != null) {
+			try {
+				obstacles = Integer.parseInt(obsVal);
+				if (obstacles>=dimRows*dimCols-8 || obstacles < 0) { //Aqui hay que poner el valor no el numero de digitos. 
+					throw new ParseException("Invalid number of obstacles:" + obstacles);
+				}
+			} catch (NumberFormatException e) {
+				throw new ParseException("Invalid number of obstacles:" + obstacles);
+			}
+		}
+	}
+	
 	/**
 	 * Starts a game using a {@link ConsoleCtrl} which is not based on MVC. Is
 	 * used only for teaching the difference from the MVC one.

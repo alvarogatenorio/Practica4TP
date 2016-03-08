@@ -19,7 +19,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
  * Un jugador aleatorio para ConnectN.
  *
  */
-public class AtaxxPlayer extends Player {
+public class AtaxxRandomPlayer extends Player { //Hay que cambiar el nombre a RandomPlayer.
 
 	/**
 	 * 
@@ -28,28 +28,11 @@ public class AtaxxPlayer extends Player {
 
 	@Override
 	public GameMove requestMove(Piece p, Board board, List<Piece> pieces, GameRules rules) {
-		if (board.isFull()) {
-			throw new GameError("The board is full, cannot make a random move!!");
-		}
-
-		int rows = board.getRows();
-		int cols = board.getCols();
-
-		// pick an initial random position
-		int currRow = Utils.randomInt(rows);
-		int currCol = Utils.randomInt(cols);
-
-		// start at (currRow,currColl) and look for the first empty position.
-		while (true) {
-			if (board.getPosition(currRow, currCol) == null) {
-				return createMove(currRow, currCol, p);
-			}
-			currCol = (currCol + 1) % cols;
-			if (currCol == 0) {
-				currRow = (currRow + 1) % rows;
-			}
-		}
-
+		
+		
+		//Funcion a cambiar, podemos hacer que se cree una lista con las jugadas posibles, y luego coger una aleatorio. 
+		
+		return null;
 	}
 
 	/**
@@ -71,8 +54,8 @@ public class AtaxxPlayer extends Player {
 	 *            Piece to place at ({@code row},{@code col}).
 	 * @return
 	 */
-	protected GameMove createMove(int row, int col, Piece p) {
-		return new AtaxxMove(row, col, p);
+	protected GameMove createMove(int oldRow, int oldCol, int row, int col, Piece p) {
+		return new AtaxxMove(oldRow, oldCol, row, col, p);
 	}
 
 }
