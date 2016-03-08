@@ -99,29 +99,28 @@ public class AtaxxMove extends GameMove {
 	 * @param p
 	 */
 	public AtaxxMove(int oldRow, int oldCol, int row, int col, Piece p) { 
-		//AQUI HAY QUE AÑADIR UNA EXCEPCION PORQUE SI EL MOVIMIENTO TIENE UN DISTANCIA MAYOR DE DOS HACEMOS QUE NO SE PUEDA CREAR.
+		
 		super(p);
 		this.oldRow = oldRow;
 		this.oldCol = oldCol;
 		this.row = row;
 		this.col = col;
-	}
+		if(maximum()!=1 && maximum()!=2){
+			throw new NumberFormatException();
+		}
+}
 
 	@Override
 	public void execute(Board board, List<Piece> pieces) {
-		/*
-		 * if (board.getPosition(row, col) == null) { board.setPosition(row,
-		 * col, getPiece()); } else { throw new GameError("position (" + row +
-		 * "," + col + ") is already occupied!"); }
-		 */
 		if (board.getPosition(row, col) == null) {
 			if (maximum() == 1) {
 				board.setPosition(row, col, getPiece());
-				transformAdjecents(board, pieces, oldRow, oldCol);
+				transformAdjecents(board, pieces, row, col);
 
 			} else if (maximum() == 2) {
 				board.setPosition(row, col, getPiece());
 				board.setPosition(oldRow, oldCol, null);
+				transformAdjecents(board, pieces, row, col);
 			} else {
 				throw new GameError("position (" + row + "," + col
 						+ ") is illegal!");

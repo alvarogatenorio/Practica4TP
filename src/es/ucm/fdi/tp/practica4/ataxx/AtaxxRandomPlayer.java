@@ -30,7 +30,7 @@ public class AtaxxRandomPlayer extends Player { //Hay que cambiar el nombre a Ra
 	@Override
 	public GameMove requestMove(Piece p, Board board, List<Piece> pieces, GameRules rules) {
 		List<GameMove> moves = new ArrayList<GameMove>();
-		moves = validMoves(board, pieces, p);
+		//moves = validMoves(board, pieces, p);
 		int random=Utils.randomInt(moves.size());
 		return moves.get(random);
 	}

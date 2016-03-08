@@ -686,6 +686,7 @@ public class Main {
 		String obs = line.getOptionValue("o");
 		if (obs != null) {
 			try {
+				
 				obstacles = Integer.parseInt(obs);
 				// REVISAR
 				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0) {

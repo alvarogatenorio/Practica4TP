@@ -3,6 +3,7 @@ package es.ucm.fdi.tp.practica4.ataxx;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.ucm.fdi.tp.basecode.bgame.Utils;
 import es.ucm.fdi.tp.basecode.bgame.model.Board;
 import es.ucm.fdi.tp.basecode.bgame.model.FiniteRectBoard;
 import es.ucm.fdi.tp.basecode.bgame.model.Game.State;
@@ -87,9 +88,16 @@ public class AtaxxRules implements GameRules {
 				board.setPosition(dim - 1, dim / 2, pieces.get(3));
 			}
 		}
-
-		// Faltan añadir los obstaculos.
-		
+		int randomRow, randomCol;
+		for(int i = 0; i < obstacles/4; i++){
+			do{
+			randomRow=Utils.randomInt(dim/2);
+			randomCol=Utils.randomInt(dim/2);
+			}while(board.getPosition(randomRow, randomCol)!=null);
+			//board.setPosition(randomRow, randomCol, );
+		}
+		//Ahora hay que reproducirlos simetricamente de manera rotacional 
+		//Alvaro eso es tuyo que no estoy seguro de como hacerlo. 
 
 		return board;
 	}
