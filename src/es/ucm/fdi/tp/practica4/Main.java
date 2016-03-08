@@ -36,9 +36,9 @@ import es.ucm.fdi.tp.practica4.ataxx.AtaxxFactory;
  * <p>
  * Esta es la clase con el metodo main de inicio del programa. Se utiliza la
  * libreria Commons-CLI para leer argumentos de la linea de ordenes: el juego al
- * que se quiere jugar y la lista de jugadores. Puedes encontrar mas informaci√≥n
- * sobre esta libreria en {@link https://commons.apache.org/proper/commons-cli/}
- * .
+ * que se quiere jugar y la lista de jugadores. Puedes encontrar mas
+ * informaci√≥n sobre esta libreria en
+ * {@link https://commons.apache.org/proper/commons-cli/} .
  */
 public class Main {
 
@@ -79,8 +79,10 @@ public class Main {
 	 */
 	enum GameInfo {
 		/*
-		 * AÒadimos enumerado de ataxx*/
-		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe("attt", "Advanced Tic-Tac-Toe"), Ataxx("ataxx", "Ataxx");
+		 * AÒadimos enumerado de ataxx
+		 */
+		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe("attt",
+				"Advanced Tic-Tac-Toe"), Ataxx("ataxx", "Ataxx");
 
 		private String id;
 		private String desc;
@@ -166,10 +168,9 @@ public class Main {
 	 * extraer los argumentos de la linea de ordenes. Depende del juego
 	 * seleccionado con la opcion -g (por defecto, {@link #DEFAULT_GAME}).
 	 */
-	
+
 	final private static Integer DEFAULT_OBSTACLES = 4;
-	
-	
+
 	private static GameFactory gameFactory;
 
 	/**
@@ -247,8 +248,8 @@ public class Main {
 	private static AIAlgorithm aiPlayerAlg;
 
 	/**
-	 * Processes the command-line arguments and modify the fields of this
-	 * class with corresponding values. E.g., the factory, the pieces, etc.
+	 * Processes the command-line arguments and modify the fields of this class
+	 * with corresponding values. E.g., the factory, the pieces, etc.
 	 *
 	 * <p>
 	 * Procesa la linea de ordenes del programa y crea los objetos necesarios
@@ -264,27 +265,40 @@ public class Main {
 	 * 
 	 * 
 	 */
-	
+
 	/**
 	 * mierda
 	 */
 	private static Integer obstacles;
-	
-	private static void parseArgs(String[] args) {
 
-		// define the valid command line options
-		//
-		Options cmdLineOptions = new Options();
+	/*
+	 * Fills the "array" of options with all the available options. If we want
+	 * to add or remove an option we just have to go here and insert a new one.
+	 */
+	private static void addAllOptions(Options cmdLineOptions) {
 		cmdLineOptions.addOption(constructHelpOption()); // -h or --help
 		cmdLineOptions.addOption(constructGameOption()); // -g or --game
 		cmdLineOptions.addOption(constructViewOption()); // -v or --view
-		cmdLineOptions.addOption(constructMlutiViewOption()); // -m or
-																// --multiviews
+		cmdLineOptions.addOption(constructMlutiViewOption()); // -m or (none)
 		cmdLineOptions.addOption(constructPlayersOption()); // -p or --players
 		cmdLineOptions.addOption(constructDimensionOption()); // -d or --dim
-		cmdLineOptions.addOption(constructObstaclesOption()); // -o or --obstacles
+		cmdLineOptions.addOption(constructObstaclesOption()); // -o or
+																// --obstacles
+	}
+
+	/* Just a prototype, maybe it will be removed. */
+	@SuppressWarnings("unused")
+	private static void parseAllOptions() {
+
+	}
+
+	private static void parseArgs(String[] args) {
+
+		Options cmdLineOptions = new Options();
+		addAllOptions(cmdLineOptions);
+
 		CommandLineParser parser = new DefaultParser();
-		
+
 		try {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 			parseHelpOption(line, cmdLineOptions);
@@ -520,18 +534,18 @@ public class Main {
 		String gameVal = line.getOptionValue("g", DEFAULT_GAME.getId());
 		GameInfo selectedGame = null;
 
-		for( GameInfo g : GameInfo.values() ) {
-			if ( g.getId().equals(gameVal) ) {
+		for (GameInfo g : GameInfo.values()) {
+			if (g.getId().equals(gameVal)) {
 				selectedGame = g;
 				break;
 			}
 		}
 
-		if ( selectedGame == null ) {
+		if (selectedGame == null) {
 			throw new ParseException("Uknown game '" + gameVal + "'");
 		}
-	
-		switch ( selectedGame ) {
+
+		switch (selectedGame) {
 		case AdvancedTicTacToe:
 			gameFactory = new AdvancedTTTFactory();
 			break;
@@ -547,15 +561,17 @@ public class Main {
 			break;
 		case Ataxx:
 			if (dimRows != null && dimCols != null && dimRows == dimCols) {
+				/*Create one specified by parameter.*/
 				gameFactory = new AtaxxFactory(dimRows);
 			} else {
+				/*The parameters are wrong, create one by default.*/
 				gameFactory = new AtaxxFactory();
 			}
 			break;
 		default:
 			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
 		}
-	
+
 	}
 
 	/**
@@ -644,19 +660,19 @@ public class Main {
 			System.exit(0);
 		}
 	}
-	
-	private static Option constructObstaclesOption() {
 
-		Option opt = new Option("o", "obstacles", true, "The number of obstacles in the game(if needed)");
+	private static Option constructObstaclesOption() {
+		Option opt = new Option("o", "obstacles", true, "The number of obstacles in the game (if it allows it)");
 		return opt;
 	}
-	
+
 	private static void parseOsbtaclesOption(CommandLine line) throws ParseException {
-		String obsVal = line.getOptionValue("o");
-		if (obsVal != null) {
+		String obs = line.getOptionValue("o");
+		if (obs != null) {
 			try {
-				obstacles = Integer.parseInt(obsVal);
-				if (obstacles>=dimRows*dimCols-8 || obstacles < 0) { //Aqui hay que poner el valor no el numero de digitos. 
+				obstacles = Integer.parseInt(obs);
+				//REVISAR
+				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0) {
 					throw new ParseException("Invalid number of obstacles:" + obstacles);
 				}
 			} catch (NumberFormatException e) {
@@ -664,7 +680,7 @@ public class Main {
 			}
 		}
 	}
-	
+
 	/**
 	 * Starts a game using a {@link ConsoleCtrl} which is not based on MVC. Is
 	 * used only for teaching the difference from the MVC one.
@@ -773,4 +789,3 @@ public class Main {
 	}
 
 }
-

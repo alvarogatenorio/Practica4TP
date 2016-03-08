@@ -35,9 +35,9 @@ import es.ucm.fdi.tp.basecode.ttt.TicTacToeFactory;
  * <p>
  * Esta es la clase con el metodo main de inicio del programa. Se utiliza la
  * libreria Commons-CLI para leer argumentos de la linea de ordenes: el juego al
- * que se quiere jugar y la lista de jugadores. Puedes encontrar mas información
- * sobre esta libreria en {@link https://commons.apache.org/proper/commons-cli/}
- * .
+ * que se quiere jugar y la lista de jugadores. Puedes encontrar mas
+ * información sobre esta libreria en
+ * {@link https://commons.apache.org/proper/commons-cli/} .
  */
 public class Main {
 
@@ -77,7 +77,8 @@ public class Main {
 	 * Juegos disponibles.
 	 */
 	enum GameInfo {
-		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe("attt", "Advanced Tic-Tac-Toe");
+		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe("attt",
+				"Advanced Tic-Tac-Toe"), Ataxx("ataxx", "Ataxx");
 
 		private String id;
 		private String desc;
@@ -240,8 +241,8 @@ public class Main {
 	private static AIAlgorithm aiPlayerAlg;
 
 	/**
-	 * Processes the command-line arguments and modify the fields of this
-	 * class with corresponding values. E.g., the factory, the pieces, etc.
+	 * Processes the command-line arguments and modify the fields of this class
+	 * with corresponding values. E.g., the factory, the pieces, etc.
 	 *
 	 * <p>
 	 * Procesa la linea de ordenes del programa y crea los objetos necesarios
@@ -507,18 +508,18 @@ public class Main {
 		String gameVal = line.getOptionValue("g", DEFAULT_GAME.getId());
 		GameInfo selectedGame = null;
 
-		for( GameInfo g : GameInfo.values() ) {
-			if ( g.getId().equals(gameVal) ) {
+		for (GameInfo g : GameInfo.values()) {
+			if (g.getId().equals(gameVal)) {
 				selectedGame = g;
 				break;
 			}
 		}
 
-		if ( selectedGame == null ) {
+		if (selectedGame == null) {
 			throw new ParseException("Uknown game '" + gameVal + "'");
 		}
-	
-		switch ( selectedGame ) {
+
+		switch (selectedGame) {
 		case AdvancedTicTacToe:
 			gameFactory = new AdvancedTTTFactory();
 			break;
@@ -535,7 +536,7 @@ public class Main {
 		default:
 			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
 		}
-	
+
 	}
 
 	/**

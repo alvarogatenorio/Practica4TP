@@ -17,28 +17,29 @@ import es.ucm.fdi.tp.basecode.bgame.model.GameRules;
 import es.ucm.fdi.tp.basecode.bgame.model.Observable;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 import es.ucm.fdi.tp.basecode.bgame.views.GenericConsoleView;
-//import es.ucm.fdi.tp.basecode.connectN.ConnectNMove;
-//import es.ucm.fdi.tp.basecode.connectN.ConnectNRandomPlayer;
-//import es.ucm.fdi.tp.basecode.connectN.ConnectNRules;
 
-/**
- * A factory for creating connect-N games. See {@link ConnectNRules} for the
- * description of the game.
- * 
- * 
- * <p>
- * Factoria para la creacion de juegos Connect-n. Vease {@link ConnectNRules}
- * para la descripcion del juego.
- */
 public class AtaxxFactory implements GameFactory {
 
 	private int dim;
-
+	
+	/**
+	 * Constructor without arguments, when the main parameters are
+	 * wrong, we create an Ataxx board of 5x5 by default.*/
 	public AtaxxFactory() {
-		this(5);
+		this.dim = 5;
 	}
-
+	
+	/**
+	 * Constructor with arguments, used when the parameters in the
+	 * main method are correct, to create a custom board of ataxx.
+	 * @param dim
+	 * 
+	 * NOTE: It throws game errors (runtime exceptions) if the arguments
+	 * are bad (less than five), To avoid future errors, we have to make sure
+	 * that the arguments here are correct..
+	 */
 	public AtaxxFactory(int dim) {
+		//Illegal dimensions cases (treat before here)!!
 		if (dim < 5) {
 			throw new GameError("Dimension must be at least 5: " + dim);
 		} 

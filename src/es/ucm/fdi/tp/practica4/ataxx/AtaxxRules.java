@@ -29,7 +29,8 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
  * <li>El numero de jugadores esta entre 2 y 4.</li>
  * <li>Los jugadores juegan en el orden proporcionado, cada uno colocando una
  * ficha en una casilla vacia. El ganador es el que consigua construir una linea
- * (horizontal, vertical o diagonal) de N fichas consecutivas del mismo tipo.</li>
+ * (horizontal, vertical o diagonal) de N fichas consecutivas del mismo tipo.
+ * </li>
  * </ul>
  *
  */
@@ -38,8 +39,7 @@ public class AtaxxRules implements GameRules {
 	// This object is returned by gameOver to indicate that the game is not
 	// over. Just to avoid creating it multiple times, etc.
 	//
-	protected final Pair<State, Piece> gameInPlayResult = new Pair<State, Piece>(
-			State.InPlay, null);
+	protected final Pair<State, Piece> gameInPlayResult = new Pair<State, Piece>(State.InPlay, null);
 
 	private int dim;
 
@@ -58,10 +58,19 @@ public class AtaxxRules implements GameRules {
 		return "Ataxx " + dim + "x" + dim;
 	}
 
+	/**
+	 * Proceso de creación del tablero de juego, debemos, insertar las piezas
+	 * iniciales al inicio.
+	 * 
+	 * Recibimos como argumento una lista de piezas como caida del cielo que
+	 * debe decirnos cuantos jugadores hay.
+	 */
 	@Override
 	public Board createBoard(List<Piece> pieces) {
-		// Al crear el tablero tenemos que añadirle las piezas iniciales.
 		FiniteRectBoard board = new FiniteRectBoard(dim, dim);
+		/*
+		 * At least it will be two players, with pieces in the opposite corners.
+		 */
 		board.setPosition(0, 0, pieces.get(0));
 		board.setPosition(dim - 1, dim - 1, pieces.get(0));
 		board.setPosition(0, dim - 1, pieces.get(1));
@@ -70,14 +79,13 @@ public class AtaxxRules implements GameRules {
 			board.setPosition(dim / 2, 0, pieces.get(2));
 			board.setPosition(dim / 2, dim - 1, pieces.get(2));
 			if (pieces.size() == 4) {
-				board.setPosition(0, dim/2, pieces.get(3));
-				board.setPosition(dim - 1, dim/2, pieces.get(3));
+				board.setPosition(0, dim / 2, pieces.get(3));
+				board.setPosition(dim - 1, dim / 2, pieces.get(3));
 			}
 		}
-		
-		//Faltan añadir los obstaculos. 
-		
-		
+
+		// Faltan añadir los obstaculos.
+
 		return board;
 	}
 
@@ -97,19 +105,16 @@ public class AtaxxRules implements GameRules {
 	}
 
 	@Override
-	public Pair<State, Piece> updateState(Board board,
-			List<Piece> playersPieces, Piece lastPlayer) {
-	
-		
-		//Funcion a cambiar, en esta funcion tenemos que comprobar cual es el estado del tablero (won, draw, inplay).
-		
+	public Pair<State, Piece> updateState(Board board, List<Piece> playersPieces, Piece lastPlayer) {
+
+		// Funcion a cambiar, en esta funcion tenemos que comprobar cual es el
+		// estado del tablero (won, draw, inplay).
 
 		return gameInPlayResult;
 	}
 
 	@Override
-	public Piece nextPlayer(Board board, List<Piece> playersPieces,
-			Piece lastPlayer) {
+	public Piece nextPlayer(Board board, List<Piece> playersPieces, Piece lastPlayer) {
 		List<Piece> pieces = playersPieces;
 		int i = pieces.indexOf(lastPlayer);
 		return pieces.get((i + 1) % pieces.size());
@@ -121,15 +126,12 @@ public class AtaxxRules implements GameRules {
 	}
 
 	@Override
-	public List<GameMove> validMoves(Board board, List<Piece> playersPieces,
-			Piece turn) {
+	public List<GameMove> validMoves(Board board, List<Piece> playersPieces, Piece turn) {
 		// Funcion a cambiar nuestros movimientos validos no son estos.
-		
-		
-		
+
 		List<GameMove> moves = new ArrayList<GameMove>();
 
-			return moves;
+		return moves;
 	}
 
 }
