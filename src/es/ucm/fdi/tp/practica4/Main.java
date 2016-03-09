@@ -42,12 +42,22 @@ import es.ucm.fdi.tp.practica4.ataxx.AtaxxFactory;
  */
 public class Main {
 
+	/*-----ENUMS-----*/
+
 	/**
-	 * The possible views.
+	 * The possible views (We will not take care of it in this project).
 	 * <p>
-	 * Vistas disponibles.
+	 * Vistas disponibles (Esto no nos importa demasiado ahora mismo).
 	 */
 	enum ViewInfo {
+		/*
+		 * REMEMBER: First we specify the console command to play and then the
+		 * full name of the game (as it will be displayed, for example, in the
+		 * help message).
+		 * 
+		 * See constructor below. If you have doubts, look for information about
+		 * enumerates inner classes in Java.
+		 */
 		WINDOW("window", "Swing"), CONSOLE("console", "Console");
 
 		private String id;
@@ -79,10 +89,15 @@ public class Main {
 	 */
 	enum GameInfo {
 		/*
-		 * Añadimos enumerado de ataxx
+		 * REMEMBER: First we specify the console command to play and then the
+		 * full name of the game (as it will be displayed, for example, in the
+		 * help message).
+		 * 
+		 * See constructor below. If you have doubts, look for information about
+		 * enumerates inner classes in Java.
 		 */
-		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe(
-				"attt", "Advanced Tic-Tac-Toe"), Ataxx("ataxx", "Ataxx");
+		CONNECTN("cn", "ConnectN"), TicTacToe("ttt", "Tic-Tac-Toe"), AdvancedTicTacToe("attt",
+				"Advanced Tic-Tac-Toe"), Ataxx("ataxx", "Ataxx");
 
 		private String id;
 		private String desc;
@@ -108,11 +123,19 @@ public class Main {
 	}
 
 	/**
-	 * Player modes (manual, random, etc.)
+	 * Player modes (manual, random, automatic,...).
 	 * <p>
-	 * Modos de juego.
+	 * Modos de juego (manual, aleatorio, automático).
 	 */
 	enum PlayerMode {
+		/*
+		 * REMEMBER: First we specify the console command to play and then the
+		 * full name of the game (as it will be displayed, for example, in the
+		 * help message).
+		 * 
+		 * See constructor below. If you have doubts, look for information about
+		 * enumerates inner classes in Java.
+		 */
 		MANUAL("m", "Manual"), RANDOM("r", "Random"), AI("a", "Automatics");
 
 		private String id;
@@ -137,26 +160,36 @@ public class Main {
 		}
 	}
 
+	/*-----DEFAULT CONSTANTS-----*/
+
 	/**
-	 * Default game to play.
+	 * Default game to play. In this project it will be Ataxx.
 	 * <p>
-	 * Juego por defecto.
+	 * Juego por defecto. En esta práctica será Ataxx.
 	 */
 	final private static GameInfo DEFAULT_GAME = GameInfo.Ataxx;
 
 	/**
-	 * default view to use.
+	 * Default view to use. This project will only be executed in console.
 	 * <p>
-	 * Vista por defecto.
+	 * Vista por defecto. la práctica está diseñada para ser ejecutada en
+	 * consola.
 	 */
 	final private static ViewInfo DEFAULT_VIEW = ViewInfo.CONSOLE;
 
 	/**
-	 * Default player mode to use.
+	 * Default player mode to use. To tests extreme cases, it will be manual
+	 * player.
 	 * <p>
-	 * Modo de juego por defecto.
+	 * Modo de juego por defecto. Para probar errores, será un jugador manual.
 	 */
 	final private static PlayerMode DEFAULT_PLAYERMODE = PlayerMode.MANUAL;
+
+	// ¿NECESARIOS? ¿LEGALES?
+	//final private static Integer DEFAULT_OBSTACLES = 4;
+	//final private static Integer DEFAULT_DIM = 5;
+
+	/*-----ATTRIBUTES-----*/
 
 	/**
 	 * This field includes a game factory that is constructed after parsing the
@@ -168,11 +201,6 @@ public class Main {
 	 * extraer los argumentos de la linea de ordenes. Depende del juego
 	 * seleccionado con la opcion -g (por defecto, {@link #DEFAULT_GAME}).
 	 */
-
-	final private static Integer DEFAULT_OBSTACLES = 4;
-	
-	final private static Integer DEFAULT_DIM = 5;
-
 	private static GameFactory gameFactory;
 
 	/**
@@ -228,6 +256,7 @@ public class Main {
 	 * incluye la opcion -d.
 	 */
 	private static Integer dimRows;
+
 	/**
 	 * Number of columns provided with the option -d ({@code null} if not
 	 * provided).
@@ -249,6 +278,11 @@ public class Main {
 	 */
 	private static AIAlgorithm aiPlayerAlg;
 
+	// DOCUMENTAR
+	private static Integer obstacles;
+
+	/*-----METHODS-----*/
+
 	/**
 	 * Processes the command-line arguments and modify the fields of this class
 	 * with corresponding values. E.g., the factory, the pieces, etc.
@@ -267,35 +301,7 @@ public class Main {
 	 * 
 	 * 
 	 */
-
-	/**
-	 * mierda
-	 */
-	private static Integer obstacles;
-
-	/*
-	 * Fills the "array" of options with all the available options. If we want
-	 * to add or remove an option we just have to go here and insert a new one.
-	 */
-	private static void addAllOptions(Options cmdLineOptions) {
-		cmdLineOptions.addOption(constructHelpOption()); // -h or --help
-		cmdLineOptions.addOption(constructGameOption()); // -g or --game
-		cmdLineOptions.addOption(constructViewOption()); // -v or --view
-		cmdLineOptions.addOption(constructMlutiViewOption()); // -m or (none)
-		cmdLineOptions.addOption(constructPlayersOption()); // -p or --players
-		cmdLineOptions.addOption(constructDimensionOption()); // -d or --dim
-		cmdLineOptions.addOption(constructObstaclesOption()); // -o or
-																// --obstacles
-	}
-
-	/* Just a prototype, maybe it will be removed. */
-	@SuppressWarnings("unused")
-	private static void parseAllOptions() {
-
-	}
-
 	private static void parseArgs(String[] args) {
-
 		Options cmdLineOptions = new Options();
 		addAllOptions(cmdLineOptions);
 
@@ -304,7 +310,7 @@ public class Main {
 		try {
 			CommandLine line = parser.parse(cmdLineOptions, args);
 			parseHelpOption(line, cmdLineOptions);
-			parseDimOptionn(line);
+			parseDimOption(line);
 			parseOsbtaclesOption(line);
 			parseGameOption(line);
 			parseViewOption(line);
@@ -330,6 +336,20 @@ public class Main {
 
 	}
 
+	/*
+	 * Auxiliary function of parseArgs.
+	 */
+	private static void addAllOptions(Options cmdLineOptions) {
+		cmdLineOptions.addOption(constructHelpOption()); // -h or --help
+		cmdLineOptions.addOption(constructGameOption()); // -g or --game
+		cmdLineOptions.addOption(constructViewOption()); // -v or --view
+		cmdLineOptions.addOption(constructMlutiViewOption()); // -m or (none)
+		cmdLineOptions.addOption(constructPlayersOption()); // -p or --players
+		cmdLineOptions.addOption(constructDimensionOption()); // -d or --dim
+		cmdLineOptions.addOption(constructObstaclesOption()); // -o or
+																// --obstacles
+	}
+
 	/**
 	 * Builds the multiview (-m or --multiviews) CLI option.
 	 * 
@@ -341,8 +361,7 @@ public class Main {
 
 	private static Option constructMlutiViewOption() {
 		return new Option("m", "multiviews", false,
-				"Create a separate view for each player (valid only when using the "
-						+ ViewInfo.WINDOW + " view)");
+				"Create a separate view for each player (valid only when using the " + ViewInfo.WINDOW + " view)");
 	}
 
 	/**
@@ -421,8 +440,7 @@ public class Main {
 		for (PlayerMode i : PlayerMode.values()) {
 			optionInfo += i.getId() + " [for " + i.getDesc() + "] ";
 		}
-		optionInfo += "). If B is not given, the default mode '"
-				+ DEFAULT_PLAYERMODE.getId()
+		optionInfo += "). If B is not given, the default mode '" + DEFAULT_PLAYERMODE.getId()
 				+ "' is used. If this option is not given a default list of pieces from the corresponding game is used, each assigmed the mode '"
 				+ DEFAULT_PLAYERMODE.getId() + "'.";
 
@@ -448,8 +466,7 @@ public class Main {
 	 *             Si se proporciona un valor invalido (@see
 	 *             {@link #constructPlayersOption()}).
 	 */
-	private static void parsePlayersOptions(CommandLine line)
-			throws ParseException {
+	private static void parsePlayersOptions(CommandLine line) throws ParseException {
 
 		String playersVal = line.getOptionValue("p");
 
@@ -483,12 +500,10 @@ public class Main {
 					if (selectedMode != null) {
 						playerModes.add(selectedMode);
 					} else {
-						throw new ParseException("Invalid player mode in '"
-								+ player + "'");
+						throw new ParseException("Invalid player mode in '" + player + "'");
 					}
 				} else {
-					throw new ParseException("Invalid player information '"
-							+ player + "'");
+					throw new ParseException("Invalid player information '" + player + "'");
 				}
 			}
 		}
@@ -552,6 +567,10 @@ public class Main {
 			throw new ParseException("Uknown game '" + gameVal + "'");
 		}
 
+		/*
+		 * AQUÍ es donde tenemos que mirar si cumplen las condiciones
+		 * especificas del juego.
+		 */
 		switch (selectedGame) {
 		case AdvancedTicTacToe:
 			gameFactory = new AdvancedTTTFactory();
@@ -567,21 +586,18 @@ public class Main {
 			gameFactory = new TicTacToeFactory();
 			break;
 		case Ataxx:
-			if (dimRows != null && dimCols != null && dimRows == dimCols) {
-				/* Create one specified by parameter. */
-				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0) {
-					gameFactory = new AtaxxFactory(dimRows, DEFAULT_OBSTACLES);
-				} else {
-					gameFactory = new AtaxxFactory(dimRows, obstacles);
-				}
-			} 	else {
+			/* CONDICIONES PARA UN JUEGO PARAMÉTRICO */
+			if (dimRows != null && dimCols != null && dimRows == dimCols && dimRows >= 5 && dimRows % 2 == 1
+					&& obstacles <= (((((dimRows/2) * (dimCols/2)) - 1) * 4) + 1)
+					&& (obstacles % 4 == 0 || obstacles % 4 == 1)) {
+				gameFactory = new AtaxxFactory(dimRows, obstacles);
+			} else {
 				/* The parameters are wrong, create one by default. */
 				gameFactory = new AtaxxFactory();
 			}
 			break;
 		default:
-			throw new UnsupportedOperationException(
-					"Something went wrong! This program point should be unreachable!");
+			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
 		}
 
 	}
@@ -597,10 +613,7 @@ public class Main {
 	 *         Objeto {@link Option} de esta opcion.
 	 */
 	private static Option constructDimensionOption() {
-		return new Option(
-				"d",
-				"dim",
-				true,
+		return new Option("d", "dim", true,
 				"The board size (if allowed by the selected game). It must has the form ROWSxCOLS.");
 	}
 
@@ -621,7 +634,7 @@ public class Main {
 	 *             <p>
 	 *             Si se proporciona un valor invalido.
 	 */
-	private static void parseDimOptionn(CommandLine line) throws ParseException {
+	private static void parseDimOption(CommandLine line) throws ParseException {
 		String dimVal = line.getOptionValue("d");
 		if (dimVal != null) {
 			try {
@@ -635,11 +648,10 @@ public class Main {
 			} catch (NumberFormatException e) {
 				throw new ParseException("Invalid dimension: " + dimVal);
 			}
-		}
-		else {
-			dimRows = DEFAULT_DIM;
-			dimCols = DEFAULT_DIM;
-		}
+		} /*
+			 * else { //REVISAR!! dimRows = DEFAULT_DIM; dimCols = DEFAULT_DIM;
+			 * }
+			 */
 
 	}
 
@@ -675,37 +687,32 @@ public class Main {
 	private static void parseHelpOption(CommandLine line, Options cmdLineOptions) {
 		if (line.hasOption("h")) {
 			HelpFormatter formatter = new HelpFormatter();
-			formatter.printHelp(Main.class.getCanonicalName(), cmdLineOptions,
-					true);
+			formatter.printHelp(Main.class.getCanonicalName(), cmdLineOptions, true);
 			System.exit(0);
 		}
 	}
 
 	private static Option constructObstaclesOption() {
-		Option opt = new Option("o", "obstacles", true,
-				"The number of obstacles in the game (if it allows it)");
+		Option opt = new Option("o", "obstacles", true, "The number of obstacles in the game (if it allows it)");
 		return opt;
 	}
 
-	private static void parseOsbtaclesOption(CommandLine line)
-			throws ParseException {
+	private static void parseOsbtaclesOption(CommandLine line) throws ParseException {
 		String obs = line.getOptionValue("o");
 		if (obs != null) {
 			try {
-
 				obstacles = Integer.parseInt(obs);
-				if (obstacles >= dimRows * dimCols - 2*dimRows || obstacles < 0
-						|| obstacles % 4 == 2 || obstacles % 4 == 3) {
-					obstacles = DEFAULT_OBSTACLES;
-				}
+				/*
+				 * REVISAR if (obstacles >= dimRows * dimCols - 2 * dimRows ||
+				 * obstacles < 0 || obstacles % 4 == 2 || obstacles % 4 == 3) {
+				 * obstacles = DEFAULT_OBSTACLES; }
+				 */
 			} catch (NumberFormatException e) {
-				throw new ParseException("Invalid number of obstacles:"
-						+ obstacles);
+				throw new ParseException("Invalid number of obstacles:" + obstacles);
 			}
-		}
-		else{ 
-			obstacles=DEFAULT_OBSTACLES;
-		}
+		} /*
+			 * REVISAR else { obstacles = DEFAULT_OBSTACLES; }
+			 */
 	}
 
 	/**
@@ -747,8 +754,7 @@ public class Main {
 			throw new UnsupportedOperationException(
 					"Swing Views are not supported in startGameNoMVC!! Please use startGameMVC instead.");
 		default:
-			throw new UnsupportedOperationException(
-					"Something went wrong! This program point should be unreachable!");
+			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
 		}
 
 		c.start();
@@ -764,6 +770,7 @@ public class Main {
 	 * 
 	 */
 	public static void startGame() {
+		/*Game factory has to be done yet.*/
 		Game g = new Game(gameFactory.gameRules());
 		Controller c = null;
 
@@ -790,12 +797,10 @@ public class Main {
 			gameFactory.createConsoleView(g, c);
 			break;
 		case WINDOW:
-			throw new UnsupportedOperationException("Swing "
-					+ (multiviews ? "Multiviews" : "Views")
-					+ " are not supported yet! ");
-		default:
 			throw new UnsupportedOperationException(
-					"Something went wrong! This program point should be unreachable!");
+					"Swing " + (multiviews ? "Multiviews" : "Views") + " are not supported yet! ");
+		default:
+			throw new UnsupportedOperationException("Something went wrong! This program point should be unreachable!");
 		}
 
 		c.start();

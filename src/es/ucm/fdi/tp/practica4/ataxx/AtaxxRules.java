@@ -49,13 +49,13 @@ public class AtaxxRules implements GameRules {
 	private Piece obstacle;
 
 	public AtaxxRules(int dim, int obstacles) {
-		if (dim < 5) {
+		/*if (dim < 5) {
 			throw new GameError("Dimension must be at least 5: " + dim);
 		} else if (dim % 2 == 0) {
 			throw new GameError("Dimesion must be odd: " + dim);
-		} else {
+		} else {*/
 			this.dim = dim;
-		}
+		//}
 		this.obstacles = obstacles;
 	}
 

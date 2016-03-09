@@ -14,17 +14,14 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 
 
 /**
- * A random player for ConnectN.
+ * A random player for Ataxx.
  * 
  * <p>
- * Un jugador aleatorio para ConnectN.
+ * Un jugador aleatorio para Ataxx.
  *
  */
 public class AtaxxRandomPlayer extends Player { //Hay que cambiar el nombre a RandomPlayer.
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	@Override
