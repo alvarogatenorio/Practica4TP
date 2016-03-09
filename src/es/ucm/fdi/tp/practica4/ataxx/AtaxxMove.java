@@ -98,37 +98,43 @@ public class AtaxxMove extends GameMove {
 	 * @param col
 	 * @param p
 	 */
-	public AtaxxMove(int oldRow, int oldCol, int row, int col, Piece p) { 
-		
+	public AtaxxMove(int oldRow, int oldCol, int row, int col, Piece p) {
+
 		super(p);
 		this.oldRow = oldRow;
 		this.oldCol = oldCol;
 		this.row = row;
 		this.col = col;
-		if(maximum()!=1 && maximum()!=2){
+		if (maximum() != 1 && maximum() != 2) {
 			throw new NumberFormatException();
 		}
-}
+	}
 
 	@Override
 	public void execute(Board board, List<Piece> pieces) {
-		if (board.getPosition(row, col) == null) {
-			if (maximum() == 1) {
-				board.setPosition(row, col, getPiece());
-				transformAdjecents(board, pieces, row, col);
+		if (board.getPosition(oldRow, oldCol) == getPiece()) {
+			if (board.getPosition(row, col) == null) {
+				if (maximum() == 1) {
+					board.setPosition(row, col, getPiece());
+					transformAdjecents(board, pieces, row, col);
 
-			} else if (maximum() == 2) {
-				board.setPosition(row, col, getPiece());
-				board.setPosition(oldRow, oldCol, null);
-				transformAdjecents(board, pieces, row, col);
+				} else if (maximum() == 2) {
+					board.setPosition(row, col, getPiece());
+					board.setPosition(oldRow, oldCol, null);
+					transformAdjecents(board, pieces, row, col);
+				} else {
+					throw new GameError("position (" + row + "," + col
+							+ ") is illegal!");
+				}
+
 			} else {
 				throw new GameError("position (" + row + "," + col
-						+ ") is illegal!");
+						+ ") is already occupied!");
 			}
-
-		} else {
-			throw new GameError("position (" + row + "," + col
-					+ ") is already occupied!");
+		}
+		else {
+			throw new GameError("In the position (" + row + "," + col
+					+ ") there is no piece of yours.");
 		}
 	}
 
@@ -154,8 +160,7 @@ public class AtaxxMove extends GameMove {
 			int x = oldRow + ds[0];
 			int y = oldCol + ds[1];
 			if (dentro(x, y, board.getRows())
-					&& board.getPosition(x, y) != null) {
-				// Falta que compruebe que no es un OBSTACULO...... NO SE COMO HACERLO TAMBIEN PASA EN ATAXX RULES
+					&& board.getPosition(x, y) != null && board.getPosition(x, y).getId()!="*") {
 				board.setPosition(x, y, getPiece());
 			}
 		}

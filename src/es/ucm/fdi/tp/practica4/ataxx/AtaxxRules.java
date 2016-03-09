@@ -13,7 +13,6 @@ import es.ucm.fdi.tp.basecode.bgame.model.GameRules;
 import es.ucm.fdi.tp.basecode.bgame.model.Pair;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 
-
 /**
  * Rules for Ataxx game.
  * <ul>
@@ -31,8 +30,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
  * <li>El numero de jugadores esta entre 2 y 4.</li>
  * <li>Los jugadores juegan en el orden proporcionado, cada uno colocando una
  * ficha en una casilla vacia. El ganador es el que consigua construir una linea
- * (horizontal, vertical o diagonal) de N fichas consecutivas del mismo tipo.
- * </li>
+ * (horizontal, vertical o diagonal) de N fichas consecutivas del mismo tipo.</li>
  * </ul>
  *
  */
@@ -41,11 +39,14 @@ public class AtaxxRules implements GameRules {
 	// This object is returned by gameOver to indicate that the game is not
 	// over. Just to avoid creating it multiple times, etc.
 	//
-	protected final Pair<State, Piece> gameInPlayResult = new Pair<State, Piece>(State.InPlay, null);
+	protected final Pair<State, Piece> gameInPlayResult = new Pair<State, Piece>(
+			State.InPlay, null);
 
 	private int dim;
-	
+
 	private int obstacles;
+
+	private Piece obstacle;
 
 	public AtaxxRules(int dim, int obstacles) {
 		if (dim < 5) {
@@ -55,7 +56,7 @@ public class AtaxxRules implements GameRules {
 		} else {
 			this.dim = dim;
 		}
-		this.obstacles= obstacles;
+		this.obstacles = obstacles;
 	}
 
 	@Override
@@ -89,16 +90,22 @@ public class AtaxxRules implements GameRules {
 			}
 		}
 		int randomRow, randomCol;
-		for(int i = 0; i < obstacles/4; i++){
-			do{
-			randomRow=Utils.randomInt(dim/2);
-			randomCol=Utils.randomInt(dim/2);
-			}while(board.getPosition(randomRow, randomCol)!=null);
-			//board.setPosition(randomRow, randomCol, );
+		obstacle = new Piece("*");
+		for (int i = 0; i < obstacles / 4; i++) {
+			randomRow = Utils.randomInt(dim / 2);
+			randomCol = Utils.randomInt(dim / 2);
+			while(board.getPosition(randomRow, randomCol) != null){
+				randomRow = Utils.randomInt(dim / 2);
+				randomCol = Utils.randomInt(dim / 2);
+			}
+			 board.setPosition(randomRow, randomCol, obstacle);
+			 board.setPosition(randomRow, dim-randomCol-1, obstacle);
+			 board.setPosition(dim-randomRow-1, randomCol, obstacle);
+			 board.setPosition(dim-randomRow-1, dim-randomCol-1, obstacle);
 		}
-		//Ahora hay que reproducirlos simetricamente de manera rotacional 
-		//Alvaro eso es tuyo que no estoy seguro de como hacerlo. 
-
+		if(obstacles%4==1){
+			board.setPosition(dim/2, dim/2, obstacle);
+		}
 		return board;
 	}
 
@@ -118,18 +125,98 @@ public class AtaxxRules implements GameRules {
 	}
 
 	@Override
-	public Pair<State, Piece> updateState(Board board, List<Piece> playersPieces, Piece lastPlayer) {
+	public Pair<State, Piece> updateState(Board board,
+			List<Piece> playersPieces, Piece lastPlayer) {
+		for (int i = 0; i < playersPieces.size(); i++) {
+			board.setPieceCount(playersPieces.get(i), 0);
+		}
+		for (int i = 0; i < dim; i++) {
+			for (int j = 0; j < dim; j++) {
+				if (board.getPosition(i, j) != null && board.getPosition(i, j).getId()!="*") {
+					Integer actualpoints = board.getPieceCount(board
+							.getPosition(i, j)) + 1;
+					board.setPieceCount(board.getPosition(i, j), actualpoints);
+				}
 
-		// Funcion a cambiar, en esta funcion tenemos que comprobar cual es el
-		// estado del tablero (won, draw, inplay).
-
+			}
+		}
+		if (board.isFull() && equalPoints(board, playersPieces)) {
+			return new Pair<State, Piece>(State.Draw, null);
+		}
+		if (board.isFull() || noValidMoves(board, playersPieces)) {
+			return new Pair<State, Piece>(State.Won, wonPlayer(board,
+					playersPieces));
+		}
+		Integer pos = onlyOneAlive(board, playersPieces);
+		if (pos != null) {
+			return new Pair<State, Piece>(State.Won, playersPieces.get(pos));
+		}
+		
 		return gameInPlayResult;
 	}
 
+	private boolean noValidMoves(Board board, List<Piece> playersPieces) {
+		boolean correct = true;
+		for (int i = 0; i < playersPieces.size(); i++) {
+			List<GameMove> moves = validMoves(board, playersPieces,
+					playersPieces.get(i));
+			if (moves.size() != 0) {
+				correct = false;
+			}
+		}
+
+		return correct;
+	}
+
+	private Integer onlyOneAlive(Board board, List<Piece> playersPieces) {
+		int alive = 0;
+		int pos = -1;
+		for (int i = 0; i < playersPieces.size() && alive < 2; i++) {
+			if (board.getPieceCount(playersPieces.get(i)) != 0) {
+				alive++;
+				if (alive == 1)
+					pos = i;
+
+			}
+		}
+		if (pos == -1 || alive == 2) {
+			return null;
+		} else {
+			return pos;
+		}
+	}
+
+	private Piece wonPlayer(Board board, List<Piece> playersPieces) {
+		int max = board.getPieceCount(playersPieces.get(0));
+		int pos = 0;
+		for (int i = 1; i < playersPieces.size(); i++) {
+			if (max < board.getPieceCount(playersPieces.get(i))) {
+				max = board.getPieceCount(playersPieces.get(i));
+				pos = i;
+			}
+		}
+		return playersPieces.get(pos);
+	}
+
+	private boolean equalPoints(Board board, List<Piece> playersPieces) {
+		boolean equal = true;
+		int points = board.getPieceCount(playersPieces.get(0));
+		for (int i = 1; i < playersPieces.size() && equal; i++) {
+			if (points != board.getPieceCount(playersPieces.get(i))) {
+				equal = false;
+			}
+		}
+		return equal;
+	}
+
 	@Override
-	public Piece nextPlayer(Board board, List<Piece> playersPieces, Piece lastPlayer) {
+	public Piece nextPlayer(Board board, List<Piece> playersPieces,
+			Piece lastPlayer) {
 		List<Piece> pieces = playersPieces;
 		int i = pieces.indexOf(lastPlayer);
+		while (board.getPieceCount(playersPieces.get((i + 1) % pieces.size())) == 0) {
+			i++;
+		}
 		return pieces.get((i + 1) % pieces.size());
 	}
 
@@ -137,32 +224,33 @@ public class AtaxxRules implements GameRules {
 	public double evaluate(Board board, List<Piece> playersPieces, Piece turn) {
 		return 0;
 	}
-	private static final int deltas [][] = {
-		{0,1}, {1,1}, {1,0}, {1,-1}, {0,-1}, {-1,1}, {-1,0}, {-1,-1},
-		{-2,-2}, {-2,-1}, {-2,0}, {-2,1}, {-2,2}, {-1,-2}, {-1,2}, {0,-2},
-		{0,2}, {1,-2}, {1,2}, {2,-2}, {2,-1}, {2,0}, {2,1}, {2,2}
-	};
-	
-	private boolean dentro(int x, int y){
-		return x>=0 && y>=0 && x<dim && y<dim;
+
+	private static final int deltas[][] = { { 0, 1 }, { 1, 1 }, { 1, 0 },
+			{ 1, -1 }, { 0, -1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, { -2, -2 },
+			{ -2, -1 }, { -2, 0 }, { -2, 1 }, { -2, 2 }, { -1, -2 }, { -1, 2 },
+			{ 0, -2 }, { 0, 2 }, { 1, -2 }, { 1, 2 }, { 2, -2 }, { 2, -1 },
+			{ 2, 0 }, { 2, 1 }, { 2, 2 } };
+
+	private boolean dentro(int x, int y) {
+		return x >= 0 && y >= 0 && x < dim && y < dim;
 	}
-	
+
 	@Override
-	public List<GameMove> validMoves(Board board, List<Piece> playersPieces, Piece turn) {
+	public List<GameMove> validMoves(Board board, List<Piece> playersPieces,
+			Piece turn) {
 		List<GameMove> moves = new ArrayList<GameMove>();
-		for(int i = 0; i<board.getRows(); i++){
-			for(int j = 0; j<board.getCols(); j++){
-				if(board.getPosition(i, j)==turn){ 
-					for(int [] ds: deltas){
+		for (int i = 0; i < board.getRows(); i++) {
+			for (int j = 0; j < board.getCols(); j++) {
+				if (board.getPosition(i, j) == turn) {
+					for (int[] ds : deltas) {
 						int x = i + ds[0];
 						int y = j + ds[1];
-						if(dentro(x,y) && board.getPosition(x, y)!=null){ 
-							//Falta que compruebe que no es un OBSTACULO...... NO SE COMO HACERLO TAMBIEN PASA EN ATAXX MOVE
+						if (dentro(x, y) && board.getPosition(x, y) == null) {
 							moves.add(new AtaxxMove(i, j, x, y, turn));
 						}
-						
+
 					}
-					
+
 				}
 			}
 		}

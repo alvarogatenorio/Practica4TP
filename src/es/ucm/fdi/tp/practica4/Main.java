@@ -686,10 +686,11 @@ public class Main {
 		String obs = line.getOptionValue("o");
 		if (obs != null) {
 			try {
-				
+
 				obstacles = Integer.parseInt(obs);
 				// REVISAR
-				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0) {
+				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0
+						|| obstacles % 4 == 2 || obstacles % 4 == 3) {
 					throw new ParseException("Invalid number of obstacles:"
 							+ obstacles);
 				}
