@@ -170,6 +170,8 @@ public class Main {
 	 */
 
 	final private static Integer DEFAULT_OBSTACLES = 4;
+	
+	final private static Integer DEFAULT_DIM = 5;
 
 	private static GameFactory gameFactory;
 
@@ -572,7 +574,7 @@ public class Main {
 				} else {
 					gameFactory = new AtaxxFactory(dimRows, obstacles);
 				}
-			} else {
+			} 	else {
 				/* The parameters are wrong, create one by default. */
 				gameFactory = new AtaxxFactory();
 			}
@@ -634,6 +636,10 @@ public class Main {
 				throw new ParseException("Invalid dimension: " + dimVal);
 			}
 		}
+		else {
+			dimRows = DEFAULT_DIM;
+			dimCols = DEFAULT_DIM;
+		}
 
 	}
 
@@ -688,16 +694,17 @@ public class Main {
 			try {
 
 				obstacles = Integer.parseInt(obs);
-				// REVISAR
-				if (obstacles >= dimRows * dimCols - 8 || obstacles < 0
+				if (obstacles >= dimRows * dimCols - 2*dimRows || obstacles < 0
 						|| obstacles % 4 == 2 || obstacles % 4 == 3) {
-					throw new ParseException("Invalid number of obstacles:"
-							+ obstacles);
+					obstacles = DEFAULT_OBSTACLES;
 				}
 			} catch (NumberFormatException e) {
 				throw new ParseException("Invalid number of obstacles:"
 						+ obstacles);
 			}
+		}
+		else{ 
+			obstacles=DEFAULT_OBSTACLES;
 		}
 	}
 

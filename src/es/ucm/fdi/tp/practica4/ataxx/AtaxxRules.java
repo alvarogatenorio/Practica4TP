@@ -94,23 +94,25 @@ public class AtaxxRules implements GameRules {
 		for (int i = 0; i < obstacles / 4; i++) {
 			randomRow = Utils.randomInt(dim / 2);
 			randomCol = Utils.randomInt(dim / 2);
-			while(board.getPosition(randomRow, randomCol) != null){
+			while (board.getPosition(randomRow, randomCol) != null) {
 				randomRow = Utils.randomInt(dim / 2);
 				randomCol = Utils.randomInt(dim / 2);
 			}
-			 board.setPosition(randomRow, randomCol, obstacle);
-			 board.setPosition(randomRow, dim-randomCol-1, obstacle);
-			 board.setPosition(dim-randomRow-1, randomCol, obstacle);
-			 board.setPosition(dim-randomRow-1, dim-randomCol-1, obstacle);
+			board.setPosition(randomRow, randomCol, obstacle);
+			board.setPosition(randomRow, dim - randomCol - 1, obstacle);
+			board.setPosition(dim - randomRow - 1, randomCol, obstacle);
+			board.setPosition(dim - randomRow - 1, dim - randomCol - 1,
+					obstacle);
 		}
-		if(obstacles%4==1){
-			board.setPosition(dim/2, dim/2, obstacle);
+		if (obstacles % 4 == 1) {
+			board.setPosition(dim / 2, dim / 2, obstacle);
 		}
 		return board;
 	}
 
 	@Override
 	public Piece initialPlayer(Board board, List<Piece> playersPieces) {
+
 		return playersPieces.get(0);
 	}
 
@@ -132,7 +134,8 @@ public class AtaxxRules implements GameRules {
 		}
 		for (int i = 0; i < dim; i++) {
 			for (int j = 0; j < dim; j++) {
-				if (board.getPosition(i, j) != null && board.getPosition(i, j).getId()!="*") {
+				if (board.getPosition(i, j) != null
+						&& board.getPosition(i, j).getId() != "*") {
 					Integer actualpoints = board.getPieceCount(board
 							.getPosition(i, j)) + 1;
 					board.setPieceCount(board.getPosition(i, j), actualpoints);
@@ -144,14 +147,18 @@ public class AtaxxRules implements GameRules {
 			return new Pair<State, Piece>(State.Draw, null);
 		}
 		if (board.isFull() || noValidMoves(board, playersPieces)) {
-			return new Pair<State, Piece>(State.Won, wonPlayer(board,
-					playersPieces));
+			if (equalPoints(board, playersPieces)) {
+				return new Pair<State, Piece>(State.Draw, null);
+			} else {
+				return new Pair<State, Piece>(State.Won, wonPlayer(board,
+						playersPieces));
+			}
 		}
 		Integer pos = onlyOneAlive(board, playersPieces);
 		if (pos != null) {
 			return new Pair<State, Piece>(State.Won, playersPieces.get(pos));
 		}
-		
+
 		return gameInPlayResult;
 	}
 
@@ -212,12 +219,17 @@ public class AtaxxRules implements GameRules {
 	@Override
 	public Piece nextPlayer(Board board, List<Piece> playersPieces,
 			Piece lastPlayer) {
-		List<Piece> pieces = playersPieces;
-		int i = pieces.indexOf(lastPlayer);
-		while (board.getPieceCount(playersPieces.get((i + 1) % pieces.size())) == 0) {
+		int i = playersPieces.indexOf(lastPlayer);
+		List<GameMove> moves = validMoves(board, playersPieces,
+				playersPieces.get((i + 1) % playersPieces.size()));
+		while (board.getPieceCount(playersPieces.get((i + 1)
+				% playersPieces.size())) == 0
+				|| moves.size() == 0) {
 			i++;
+			moves = validMoves(board, playersPieces,
+					playersPieces.get((i + 1) % playersPieces.size()));
 		}
-		return pieces.get((i + 1) % pieces.size());
+		return playersPieces.get((i + 1) % playersPieces.size());
 	}
 
 	@Override

@@ -133,7 +133,7 @@ public class AtaxxMove extends GameMove {
 			}
 		}
 		else {
-			throw new GameError("In the position (" + row + "," + col
+			throw new GameError("In the position (" + oldRow + "," + oldCol
 					+ ") there is no piece of yours.");
 		}
 	}
@@ -222,7 +222,7 @@ public class AtaxxMove extends GameMove {
 
 	@Override
 	public String help() {
-		return "'row column', to place a piece at the corresponding position.";
+		return "Row and column for origin and for destination, separated by spaces (four numbers).";
 	}
 
 	@Override
