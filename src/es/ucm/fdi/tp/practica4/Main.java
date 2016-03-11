@@ -185,10 +185,6 @@ public class Main {
 	 */
 	final private static PlayerMode DEFAULT_PLAYERMODE = PlayerMode.MANUAL;
 
-	// ¿NECESARIOS? ¿LEGALES?
-	//final private static Integer DEFAULT_OBSTACLES = 4;
-	//final private static Integer DEFAULT_DIM = 5;
-
 	/*-----ATTRIBUTES-----*/
 
 	/**
@@ -648,10 +644,7 @@ public class Main {
 			} catch (NumberFormatException e) {
 				throw new ParseException("Invalid dimension: " + dimVal);
 			}
-		} /*
-			 * else { //REVISAR!! dimRows = DEFAULT_DIM; dimCols = DEFAULT_DIM;
-			 * }
-			 */
+		}
 
 	}
 
@@ -702,17 +695,10 @@ public class Main {
 		if (obs != null) {
 			try {
 				obstacles = Integer.parseInt(obs);
-				/*
-				 * REVISAR if (obstacles >= dimRows * dimCols - 2 * dimRows ||
-				 * obstacles < 0 || obstacles % 4 == 2 || obstacles % 4 == 3) {
-				 * obstacles = DEFAULT_OBSTACLES; }
-				 */
 			} catch (NumberFormatException e) {
 				throw new ParseException("Invalid number of obstacles:" + obstacles);
 			}
-		} /*
-			 * REVISAR else { obstacles = DEFAULT_OBSTACLES; }
-			 */
+		}
 	}
 
 	/**
