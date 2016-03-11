@@ -20,7 +20,7 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
  * Un jugador aleatorio para Ataxx.
  *
  */
-public class AtaxxRandomPlayer extends Player { //Hay que cambiar el nombre a RandomPlayer.
+public class AtaxxRandomPlayer extends Player {
 
 	private static final long serialVersionUID = 1L;
 

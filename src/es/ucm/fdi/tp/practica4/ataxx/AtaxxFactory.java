@@ -64,7 +64,6 @@ public class AtaxxFactory implements GameFactory {
 	@Override
 	public Player createConsolePlayer() {
 		ArrayList<GameMove> possibleMoves = new ArrayList<GameMove>();
-		//WTF
 		possibleMoves.add(new AtaxxMove());
 		return new ConsolePlayer(new Scanner(System.in), possibleMoves);
 	}

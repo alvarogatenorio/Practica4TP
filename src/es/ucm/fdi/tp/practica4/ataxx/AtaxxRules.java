@@ -29,7 +29,8 @@ import es.ucm.fdi.tp.basecode.bgame.model.Piece;
  * <li>El numero de jugadores esta entre 2 y 4.</li>
  * <li>Los jugadores juegan en el orden proporcionado, cada uno colocando una
  * ficha en una casilla vacia. El ganador es el que consigua construir una linea
- * (horizontal, vertical o diagonal) de N fichas consecutivas del mismo tipo.</li>
+ * (horizontal, vertical o diagonal) de N fichas consecutivas del mismo tipo.
+ * </li>
  * </ul>
  *
  */
@@ -38,8 +39,7 @@ public class AtaxxRules implements GameRules {
 	// This object is returned by gameOver to indicate that the game is not
 	// over. Just to avoid creating it multiple times, etc.
 	//
-	protected final Pair<State, Piece> gameInPlayResult = new Pair<State, Piece>(
-			State.InPlay, null);
+	protected final Pair<State, Piece> gameInPlayResult = new Pair<State, Piece>(State.InPlay, null);
 
 	private int dim;
 
@@ -50,8 +50,8 @@ public class AtaxxRules implements GameRules {
 	public AtaxxRules(int dim, int obstacles) {
 		/*
 		 * if (dim < 5) { throw new GameError("Dimension must be at least 5: " +
-		 * dim); } else if (dim % 2 == 0) { throw new
-		 * GameError("Dimesion must be odd: " + dim); } else {
+		 * dim); } else if (dim % 2 == 0) { throw new GameError(
+		 * "Dimesion must be odd: " + dim); } else {
 		 */
 		this.dim = dim;
 		// }
@@ -63,13 +63,6 @@ public class AtaxxRules implements GameRules {
 		return "Ataxx " + dim + "x" + dim;
 	}
 
-	/**
-	 * Proceso de creación del tablero de juego, debemos, insertar las piezas
-	 * iniciales al inicio.
-	 * 
-	 * Recibimos como argumento una lista de piezas como caida del cielo que
-	 * debe decirnos cuantos jugadores hay.
-	 */
 	@Override
 	public Board createBoard(List<Piece> pieces) {
 		/* Initializing the board. */
@@ -80,13 +73,18 @@ public class AtaxxRules implements GameRules {
 	}
 
 	private void embedPlayers(List<Piece> pieces, Board board) {
+		/* There will always be 2 players placed in the opposite corners. */
 		board.setPosition(0, 0, pieces.get(0));
 		board.setPosition(dim - 1, dim - 1, pieces.get(0));
 		board.setPosition(0, dim - 1, pieces.get(1));
 		board.setPosition(dim - 1, 0, pieces.get(1));
+
+		/* Here we consider putting the third player. */
 		if (pieces.size() > 2 && pieces.size() <= 4) {
 			board.setPosition(dim / 2, 0, pieces.get(2));
 			board.setPosition(dim / 2, dim - 1, pieces.get(2));
+
+			/* Now we consider putting the forth one. */
 			if (pieces.size() == 4) {
 				board.setPosition(0, dim / 2, pieces.get(3));
 				board.setPosition(dim - 1, dim / 2, pieces.get(3));
@@ -94,9 +92,18 @@ public class AtaxxRules implements GameRules {
 		}
 	}
 
+	/**
+	 * Auxiliary function of {@link createBoard()}, it should be divided in more
+	 * functions.
+	 */
 	private void spreadObstacles(Board board) {
 		int randomRow, randomCol;
 		obstacle = new Piece("*");
+
+		/*
+		 * The obstacles are always greater than 4, in fact they are multiples
+		 * of 4 or multiples of 4 plus 1.
+		 */
 		for (int i = 0; i < obstacles / 4; i++) {
 			randomRow = Utils.randomInt(dim / 2);
 			randomCol = Utils.randomInt(dim / 2);
@@ -104,11 +111,14 @@ public class AtaxxRules implements GameRules {
 				randomRow = Utils.randomInt(dim / 2);
 				randomCol = Utils.randomInt(dim / 2);
 			}
+			/*
+			 * We put one obstacle an then we put three more with rotational
+			 * symmetry.
+			 */
 			board.setPosition(randomRow, randomCol, obstacle);
 			board.setPosition(randomRow, dim - randomCol - 1, obstacle);
 			board.setPosition(dim - randomRow - 1, randomCol, obstacle);
-			board.setPosition(dim - randomRow - 1, dim - randomCol - 1,
-					obstacle);
+			board.setPosition(dim - randomRow - 1, dim - randomCol - 1, obstacle);
 		}
 		if (obstacles % 4 == 1) {
 			board.setPosition(dim / 2, dim / 2, obstacle);
@@ -132,8 +142,7 @@ public class AtaxxRules implements GameRules {
 	}
 
 	@Override
-	public Pair<State, Piece> updateState(Board board,
-			List<Piece> playersPieces, Piece lastPlayer) {
+	public Pair<State, Piece> updateState(Board board, List<Piece> playersPieces, Piece lastPlayer) {
 
 		refreshPiecesCounters(board, playersPieces);
 
@@ -161,8 +170,7 @@ public class AtaxxRules implements GameRules {
 			if (equalPoints(board, playersPieces)) {
 				return new Pair<State, Piece>(State.Draw, null);
 			} else {
-				return new Pair<State, Piece>(State.Won, wonPlayer(board,
-						playersPieces));
+				return new Pair<State, Piece>(State.Won, wonPlayer(board, playersPieces));
 			}
 		}
 
@@ -181,8 +189,7 @@ public class AtaxxRules implements GameRules {
 	private boolean noValidMoves(Board board, List<Piece> playersPieces) {
 		boolean correct = true;
 		for (int i = 0; i < playersPieces.size(); i++) {
-			List<GameMove> moves = validMoves(board, playersPieces,
-					playersPieces.get(i));
+			List<GameMove> moves = validMoves(board, playersPieces, playersPieces.get(i));
 			if (moves.size() != 0) {
 				correct = false;
 			}
@@ -198,10 +205,8 @@ public class AtaxxRules implements GameRules {
 
 		for (int i = 0; i < dim; i++) {
 			for (int j = 0; j < dim; j++) {
-				if (board.getPosition(i, j) != null
-						&& board.getPosition(i, j).getId() != "*") {
-					Integer actualpoints = board.getPieceCount(board
-							.getPosition(i, j)) + 1;
+				if (board.getPosition(i, j) != null && board.getPosition(i, j).getId() != "*") {
+					Integer actualpoints = board.getPieceCount(board.getPosition(i, j)) + 1;
 					board.setPieceCount(board.getPosition(i, j), actualpoints);
 				}
 
@@ -243,8 +248,7 @@ public class AtaxxRules implements GameRules {
 		boolean equal = false;
 		Piece winnerPiece = wonPlayer(board, playersPieces);
 		for (int i = 0; i < playersPieces.size(); i++) {
-			if (board.getPieceCount(playersPieces.get(i)) == board
-					.getPieceCount(winnerPiece)
+			if (board.getPieceCount(playersPieces.get(i)) == board.getPieceCount(winnerPiece)
 					&& playersPieces.get(i).getId() != winnerPiece.getId()) {
 				equal = true;
 			}
@@ -253,17 +257,12 @@ public class AtaxxRules implements GameRules {
 	}
 
 	@Override
-	public Piece nextPlayer(Board board, List<Piece> playersPieces,
-			Piece lastPlayer) {
+	public Piece nextPlayer(Board board, List<Piece> playersPieces, Piece lastPlayer) {
 		int i = playersPieces.indexOf(lastPlayer);
-		List<GameMove> moves = validMoves(board, playersPieces,
-				playersPieces.get((i + 1) % playersPieces.size()));
-		while (board.getPieceCount(playersPieces.get((i + 1)
-				% playersPieces.size())) == 0
-				|| moves.size() == 0) {
+		List<GameMove> moves = validMoves(board, playersPieces, playersPieces.get((i + 1) % playersPieces.size()));
+		while (board.getPieceCount(playersPieces.get((i + 1) % playersPieces.size())) == 0 || moves.size() == 0) {
 			i++;
-			moves = validMoves(board, playersPieces,
-					playersPieces.get((i + 1) % playersPieces.size()));
+			moves = validMoves(board, playersPieces, playersPieces.get((i + 1) % playersPieces.size()));
 		}
 		return playersPieces.get((i + 1) % playersPieces.size());
 	}
@@ -273,19 +272,16 @@ public class AtaxxRules implements GameRules {
 		return 0;
 	}
 
-	private static final int deltas[][] = { { 0, 1 }, { 1, 1 }, { 1, 0 },
-			{ 1, -1 }, { 0, -1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, { -2, -2 },
-			{ -2, -1 }, { -2, 0 }, { -2, 1 }, { -2, 2 }, { -1, -2 }, { -1, 2 },
-			{ 0, -2 }, { 0, 2 }, { 1, -2 }, { 1, 2 }, { 2, -2 }, { 2, -1 },
-			{ 2, 0 }, { 2, 1 }, { 2, 2 } };
+	private static final int deltas[][] = { { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 1 }, { -1, 0 },
+			{ -1, -1 }, { -2, -2 }, { -2, -1 }, { -2, 0 }, { -2, 1 }, { -2, 2 }, { -1, -2 }, { -1, 2 }, { 0, -2 },
+			{ 0, 2 }, { 1, -2 }, { 1, 2 }, { 2, -2 }, { 2, -1 }, { 2, 0 }, { 2, 1 }, { 2, 2 } };
 
 	private boolean dentro(int x, int y) {
 		return x >= 0 && y >= 0 && x < dim && y < dim;
 	}
 
 	@Override
-	public List<GameMove> validMoves(Board board, List<Piece> playersPieces,
-			Piece turn) {
+	public List<GameMove> validMoves(Board board, List<Piece> playersPieces, Piece turn) {
 		List<GameMove> moves = new ArrayList<GameMove>();
 		for (int i = 0; i < board.getRows(); i++) {
 			for (int j = 0; j < board.getCols(); j++) {

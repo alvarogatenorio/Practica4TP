@@ -6,7 +6,6 @@ import es.ucm.fdi.tp.basecode.bgame.model.Board;
 import es.ucm.fdi.tp.basecode.bgame.model.GameError;
 import es.ucm.fdi.tp.basecode.bgame.model.GameMove;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
-import es.ucm.fdi.tp.basecode.connectN.ConnectNMove;
 
 /**
  * A Class representing a move for ConnectN.
@@ -17,9 +16,6 @@ import es.ucm.fdi.tp.basecode.connectN.ConnectNMove;
  */
 public class AtaxxMove extends GameMove {
 
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -44,7 +40,7 @@ public class AtaxxMove extends GameMove {
 	 * 
 	 * <p>
 	 * Fila desde la que se intenta mover la pieza.
-	 * */
+	 */
 	protected int oldRow;
 
 	/**
@@ -57,41 +53,26 @@ public class AtaxxMove extends GameMove {
 
 	/**
 	 * This constructor should be used ONLY to get an instance of
-	 * {@link ConnectNMove} to generate game moves from strings by calling
+	 * {@link AtaxxMove} to generate game moves from strings by calling
 	 * {@link #fromString(String)}
 	 * 
 	 * <p>
 	 * Solo se debe usar este constructor para obtener objetos de
-	 * {@link ConnectNMove} para generar movimientos a partir de strings usando
-	 * el metodo {@link #fromString(String)}
+	 * {@link AtaxxMove} para generar movimientos a partir de strings usando el
+	 * metodo {@link #fromString(String)}
 	 * 
 	 */
 	public AtaxxMove() {
 	}
 
 	/**
-	 * Constructs a move for placing a piece of the type referenced by {@code p}
-	 * at position ({@code row},{@code col}).
-	 * 
+	 * Constructs a move for placing (int the ataxx sense) a piece of the type
+	 * referenced by {@code p} from a valid position in the board to another
+	 * valid position.
 	 * <p>
-	 * Construye un movimiento para colocar una ficha del tipo referenciado por
-	 * {@code p} en la posicion ({@code row},{@code col}).
+	 * In this case we consider a valid position somewhere in the closed ball of
+	 * radius 2 (if we are in the d_infinite distance topology).
 	 * 
-	 * @param row
-	 *            Number of row.
-	 *            <p>
-	 *            Numero de fila.
-	 * @param col
-	 *            Number of column.
-	 *            <p>
-	 *            Numero de columna.
-	 * @param p
-	 *            A piece to be place at ({@code row},{@code col}).
-	 *            <p>
-	 *            Ficha a colocar en ({@code row},{@code col}).
-	 */
-
-	/**
 	 * @param oldRow
 	 * @param oldCol
 	 * @param row
@@ -123,18 +104,14 @@ public class AtaxxMove extends GameMove {
 					board.setPosition(oldRow, oldCol, null);
 					transformAdjecents(board, pieces, row, col);
 				} else {
-					throw new GameError("position (" + row + "," + col
-							+ ") is illegal!");
+					throw new GameError("position (" + row + "," + col + ") is illegal!");
 				}
 
 			} else {
-				throw new GameError("position (" + row + "," + col
-						+ ") is already occupied!");
+				throw new GameError("position (" + row + "," + col + ") is already occupied!");
 			}
-		}
-		else {
-			throw new GameError("In the position (" + oldRow + "," + oldCol
-					+ ") there is no piece of yours.");
+		} else {
+			throw new GameError("In the position (" + oldRow + "," + oldCol + ") there is no piece of yours.");
 		}
 	}
 
@@ -147,20 +124,19 @@ public class AtaxxMove extends GameMove {
 		return maximum;
 	}
 
-	private static final int deltas[][] = { { 0, 1 }, { 1, 1 }, { 1, 0 },
-			{ 1, -1 }, { 0, -1 }, { -1, 1 }, { -1, 0 }, { -1, -1 }, };
+	private static final int deltas[][] = { { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 1 }, { -1, 0 },
+			{ -1, -1 }, };
 
 	private boolean dentro(int x, int y, int dim) {
 		return x >= 0 && y >= 0 && x < dim && y < dim;
 	}
 
-	private void transformAdjecents(Board board, List<Piece> pieces,
-			int oldRow, int oldCol) {
+	private void transformAdjecents(Board board, List<Piece> pieces, int oldRow, int oldCol) {
 		for (int[] ds : deltas) {
 			int x = oldRow + ds[0];
 			int y = oldCol + ds[1];
-			if (dentro(x, y, board.getRows())
-					&& board.getPosition(x, y) != null && board.getPosition(x, y).getId()!="*") {
+			if (dentro(x, y, board.getRows()) && board.getPosition(x, y) != null
+					&& board.getPosition(x, y).getId() != "*") {
 				board.setPosition(x, y, getPiece());
 			}
 		}
@@ -215,8 +191,7 @@ public class AtaxxMove extends GameMove {
 	 *            <p>
 	 *            Columna del nuevo movimiento.
 	 */
-	protected GameMove createMove(int oldRow, int oldCol, int row, int col,
-			Piece p) {
+	protected GameMove createMove(int oldRow, int oldCol, int row, int col, Piece p) {
 		return new AtaxxMove(oldRow, oldCol, row, col, p);
 	}
 
@@ -230,8 +205,7 @@ public class AtaxxMove extends GameMove {
 		if (getPiece() == null) {
 			return help();
 		} else {
-			return "Place a piece '" + getPiece() + "' at (" + row + "," + col
-					+ ")";
+			return "Place a piece '" + getPiece() + "' at (" + row + "," + col + ")";
 		}
 	}
 }

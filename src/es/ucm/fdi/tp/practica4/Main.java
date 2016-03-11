@@ -274,7 +274,14 @@ public class Main {
 	 */
 	private static AIAlgorithm aiPlayerAlg;
 
-	// DOCUMENTAR
+	/**
+	 * Number of obstacles provided with the option -o ({@code null} if not
+	 * provided).
+	 * 
+	 * <p>
+	 * Numero de obtaculos proporcionados con la opcion -o, o {@code null} si no
+	 * se incluye la opción -o.
+	 */
 	private static Integer obstacles;
 
 	/*-----METHODS-----*/
@@ -332,8 +339,9 @@ public class Main {
 
 	}
 
-	/*
-	 * Auxiliary function of parseArgs.
+	/**
+	 * Auxiliary function of {@link parseArgs}}
+	 * @param cmdLineOptions
 	 */
 	private static void addAllOptions(Options cmdLineOptions) {
 		cmdLineOptions.addOption(constructHelpOption()); // -h or --help
@@ -582,9 +590,10 @@ public class Main {
 			gameFactory = new TicTacToeFactory();
 			break;
 		case Ataxx:
-			/* CONDICIONES PARA UN JUEGO PARAMÉTRICO */
+			/* CONDICIONES PARA UN JUEGO PARAMÉTRICO 
+			 * Se podría hacer más legible con una función booleana.*/
 			if (dimRows != null && dimCols != null && dimRows == dimCols && dimRows >= 5 && dimRows % 2 == 1
-					&& obstacles <= (((((dimRows/2) * (dimCols/2)) - 1) * 4) + 1)
+					&& obstacles <= (((((dimRows / 2) * (dimCols / 2)) - 1) * 4) + 1)
 					&& (obstacles % 4 == 0 || obstacles % 4 == 1)) {
 				gameFactory = new AtaxxFactory(dimRows, obstacles);
 			} else {
@@ -597,7 +606,7 @@ public class Main {
 		}
 
 	}
-
+	
 	/**
 	 * Builds the dimension (-d or --dim) CLI option.
 	 * 
@@ -756,7 +765,7 @@ public class Main {
 	 * 
 	 */
 	public static void startGame() {
-		/*Game factory has to be done yet.*/
+		/* Game factory has to be done yet. */
 		Game g = new Game(gameFactory.gameRules());
 		Controller c = null;
 

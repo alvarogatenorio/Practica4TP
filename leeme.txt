@@ -1,0 +1,15 @@
+Componentes del Grupo
+
+-Álvaro García Tenorio
+-Miguel Pascual Domínguez
+
+No hemos tenido problemas a destacar más que los ya comentados en clase.
+
+Sin embargo si tenemos dudas acerca de cuando se debe lanzar una 
+excepción GameError y cuando no. Ante esto, hemos optado por, entre comillas, 
+no permitir al usuario introducir datos incorrectos, ya que siempre que datos
+así eran introducidos, generamos un juego por defecto.
+
+Hasta donde nosotros sabemos la práctica es funcional.
+
+Un saludo!
