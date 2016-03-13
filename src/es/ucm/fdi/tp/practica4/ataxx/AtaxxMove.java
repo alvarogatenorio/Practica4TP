@@ -8,15 +8,17 @@ import es.ucm.fdi.tp.basecode.bgame.model.GameMove;
 import es.ucm.fdi.tp.basecode.bgame.model.Piece;
 
 /**
- * A Class representing a move for ConnectN.
+ * A Class representing a move for Ataxx.
  * 
  * <p>
- * Clase para representar un movimiento del juego conecta-n.
+ * Clase para representar un movimiento del juego Ataxx.
  * 
  */
 public class AtaxxMove extends GameMove {
 
 	private static final long serialVersionUID = 1L;
+
+	private static final String OBSTACLE = "*";
 
 	/**
 	 * The row where to place the piece return by {@link GameMove#getPiece()}.
@@ -80,75 +82,130 @@ public class AtaxxMove extends GameMove {
 	 * @param p
 	 */
 	public AtaxxMove(int oldRow, int oldCol, int row, int col, Piece p) {
-
 		super(p);
 		this.oldRow = oldRow;
 		this.oldCol = oldCol;
 		this.row = row;
 		this.col = col;
-		if (maximum() != 1 && maximum() != 2) {
+
+		/* Checking if the destination is out of range. */
+		if (infiniteDistance() > 2) {
+			/*
+			 * WHY DO WE THROW A NUMBER FORMAT EXCEPTION??? WHERE IT IS CAUGHT??
+			 */
 			throw new NumberFormatException();
 		}
 	}
 
 	@Override
 	public void execute(Board board, List<Piece> pieces) {
+		/* When we do things legally... */
 		if (board.getPosition(oldRow, oldCol) == getPiece()) {
+			/* When we move to an empty position... */
 			if (board.getPosition(row, col) == null) {
-				if (maximum() == 1) {
-					board.setPosition(row, col, getPiece());
-					transformAdjecents(board, pieces, row, col);
-
-				} else if (maximum() == 2) {
-					board.setPosition(row, col, getPiece());
-					board.setPosition(oldRow, oldCol, null);
-					transformAdjecents(board, pieces, row, col);
+				if (infiniteDistance() == 1) {
+					moveToAdjacent(board, pieces);
+				} else if (infiniteDistance() == 2) {
+					moveFar(board, pieces);
 				} else {
-					throw new GameError("position (" + row + "," + col + ") is illegal!");
+					throw new GameError("Position (" + row + "," + col + ") is illegal!");
 				}
-
 			} else {
-				throw new GameError("position (" + row + "," + col + ") is already occupied!");
+				throw new GameError("Position (" + row + "," + col + ") is already occupied!");
 			}
 		} else {
 			throw new GameError("In the position (" + oldRow + "," + oldCol + ") there is no piece of yours.");
 		}
 	}
 
-	private int maximum() {
-		int maximum;
-		maximum = Math.abs(oldRow - row);
-		if (maximum < Math.abs(oldCol - col)) {
-			maximum = Math.abs(oldCol - col);
-		}
-		return maximum;
+	/**
+	 * @return the infinite distance between the original piece and the
+	 *         destination one.
+	 */
+	private int infiniteDistance() {
+		return Math.max(Math.abs(oldRow - row), Math.abs(oldCol - col));
+	}
+
+	/**
+	 * Moves piece from its original position to an adjacent one according to
+	 * the rules of Ataxx.
+	 * 
+	 * @param board
+	 *            The game board.
+	 * @param pieces
+	 *            The list of pieces in the board.
+	 */
+	private void moveToAdjacent(Board board, List<Piece> pieces) {
+		board.setPosition(row, col, getPiece());
+		board.setPieceCount(getPiece(), board.getPieceCount(getPiece()) + 1);
+		transformAdjacents(board, pieces, row, col);
+	}
+
+	/**
+	 * Moves piece from its original position to a non adjacent one according to
+	 * the rules of Ataxx.
+	 * 
+	 * @param board
+	 *            The game board.
+	 * @param pieces
+	 *            The list of pieces in the board.
+	 */
+	private void moveFar(Board board, List<Piece> pieces) {
+		board.setPosition(row, col, getPiece());
+		board.setPosition(oldRow, oldCol, null);
+		transformAdjacents(board, pieces, row, col);
 	}
 
 	private static final int deltas[][] = { { 0, 1 }, { 1, 1 }, { 1, 0 }, { 1, -1 }, { 0, -1 }, { -1, 1 }, { -1, 0 },
 			{ -1, -1 }, };
 
-	private boolean dentro(int x, int y, int dim) {
+	/**
+	 * Given a position and the dimension of the squared board, decides if the
+	 * position is in or out of the board.
+	 * 
+	 * @param x
+	 *            row
+	 * @param y
+	 *            column
+	 * @param dim
+	 *            dimension
+	 * @return {@code true} if in, {@code false} if not.
+	 */
+	private boolean inBoard(int x, int y, int dim) {
 		return x >= 0 && y >= 0 && x < dim && y < dim;
 	}
 
-	private void transformAdjecents(Board board, List<Piece> pieces, int oldRow, int oldCol) {
+	private void transformAdjacents(Board board, List<Piece> pieces, int oldRow, int oldCol) {
 		for (int[] ds : deltas) {
 			int x = oldRow + ds[0];
 			int y = oldCol + ds[1];
-			if (dentro(x, y, board.getRows()) && board.getPosition(x, y) != null
-					&& board.getPosition(x, y).getId() != "*") {
+			/*
+			 * If is in, the position is not empty an is not an obstacle or a
+			 * piece of yours.
+			 */
+			Piece p = board.getPosition(x, y);
+			if (inBoard(x, y, board.getRows()) && p != null && !isObstacle(p) && p.getId() != getPiece().getId()) {
+				board.setPieceCount(p, board.getPieceCount(p) - 1);
+				board.setPieceCount(getPiece(), board.getPieceCount(getPiece()) + 1);
 				board.setPosition(x, y, getPiece());
 			}
 		}
 	}
 
 	/**
-	 * This move can be constructed from a string of the form "row SPACE col"
-	 * where row and col are integers representing a position.
+	 * Decides is a piece is an obstacle or not.
 	 * 
-	 * <p>
-	 * Se puede construir un movimiento desde un string de la forma
-	 * "row SPACE col" donde row y col son enteros que representan una casilla.
+	 * @param p
+	 *            Piece to check.
+	 * @return {@code true} if is and obstacle, {@code false} if not.
+	 */
+	private boolean isObstacle(Piece p) {
+		return p.getId() == OBSTACLE;
+	}
+
+	/**
+	 * This move can be constructed from a string of the form
+	 * "oldRow SPACE oldCol SPACE row SPACE col".
 	 */
 	@Override
 	public GameMove fromString(Piece p, String str) {
@@ -205,7 +262,8 @@ public class AtaxxMove extends GameMove {
 		if (getPiece() == null) {
 			return help();
 		} else {
-			return "Place a piece '" + getPiece() + "' at (" + row + "," + col + ")";
+			return "Place a piece '" + getPiece() + "' from (" + oldRow + "," + oldCol + ") at (" + row + "," + col
+					+ ")";
 		}
 	}
 }
