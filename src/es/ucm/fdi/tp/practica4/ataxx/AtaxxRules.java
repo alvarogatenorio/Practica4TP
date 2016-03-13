@@ -47,14 +47,10 @@ public class AtaxxRules implements GameRules {
 
 	private Piece obstacle;
 
+	private int wonIndex;
+
 	public AtaxxRules(int dim, int obstacles) {
-		/*
-		 * if (dim < 5) { throw new GameError("Dimension must be at least 5: " +
-		 * dim); } else if (dim % 2 == 0) { throw new GameError(
-		 * "Dimesion must be odd: " + dim); } else {
-		 */
 		this.dim = dim;
-		// }
 		this.obstacles = obstacles;
 	}
 
@@ -127,7 +123,6 @@ public class AtaxxRules implements GameRules {
 
 	@Override
 	public Piece initialPlayer(Board board, List<Piece> playersPieces) {
-
 		return playersPieces.get(0);
 	}
 
@@ -144,48 +139,29 @@ public class AtaxxRules implements GameRules {
 	@Override
 	public Pair<State, Piece> updateState(Board board, List<Piece> playersPieces, Piece lastPlayer) {
 
-		refreshPiecesCounters(board, playersPieces);
-
-		/*
-		 * If the board is full and the maximum score is shared by at least two
-		 * players, we have a DRAW.
-		 */
-		if (board.isFull() && equalPoints(board, playersPieces)) {
-			return new Pair<State, Piece>(State.Draw, null);
-		}
-
-		/*
-		 * If the board is full and there is no draw, the only possible option
-		 * is that someone has won the game.
-		 * 
-		 * If the board is full and there is a draw, this point should be
-		 * unreachable.
-		 * 
-		 * If the board has empty cells but no one has valid moves we will check
-		 * for the draw or for the winner.
-		 * 
-		 * FOR SURE CAN BE DONE BETTER!!
-		 */
-		if (board.isFull() || noValidMoves(board, playersPieces)) {
-			if (equalPoints(board, playersPieces)) {
+		Integer pos;
+		if (board.isFull()) {
+			if (equalPoints(board, playersPieces)) { // twice linear (reduce!!)
 				return new Pair<State, Piece>(State.Draw, null);
 			} else {
-				return new Pair<State, Piece>(State.Won, wonPlayer(board, playersPieces));
+				return new Pair<State, Piece>(State.Won, playersPieces.get(wonIndex));
+			}
+		} else {
+			if (noValidMoves(board, playersPieces)) {
+				if (equalPoints(board, playersPieces)) {
+					return new Pair<State, Piece>(State.Draw, null);
+				} else {
+					return new Pair<State, Piece>(State.Won, playersPieces.get(wonIndex));
+				}
+			} else if ((pos = onlyOneAlive(board, playersPieces)) != null) {
+				return new Pair<State, Piece>(State.Won, playersPieces.get(pos));
+			} else {
+				return gameInPlayResult;
 			}
 		}
-
-		/*
-		 * The there is only one piece in the board, the owner of the piece is
-		 * trivially the winner.
-		 */
-		Integer pos = onlyOneAlive(board, playersPieces);
-		if (pos != null) {
-			return new Pair<State, Piece>(State.Won, playersPieces.get(pos));
-		}
-
-		return gameInPlayResult;
 	}
-
+	
+	//EXPENSIVE!!
 	private boolean noValidMoves(Board board, List<Piece> playersPieces) {
 		boolean correct = true;
 		for (int i = 0; i < playersPieces.size(); i++) {
@@ -198,6 +174,14 @@ public class AtaxxRules implements GameRules {
 		return correct;
 	}
 
+	/**
+	 * DO NOT USE, its here until we check the correctness of its substitute.
+	 * 
+	 * @deprecated it will for sure disappear.
+	 * @param board
+	 * @param playersPieces
+	 */
+	@SuppressWarnings("unused")
 	private void refreshPiecesCounters(Board board, List<Piece> playersPieces) {
 		for (int i = 0; i < playersPieces.size(); i++) {
 			board.setPieceCount(playersPieces.get(i), 0);
@@ -213,7 +197,8 @@ public class AtaxxRules implements GameRules {
 			}
 		}
 	}
-
+	
+	/*REVISE*/
 	private Integer onlyOneAlive(Board board, List<Piece> playersPieces) {
 		int alive = 0;
 		int pos = -1;
@@ -241,12 +226,22 @@ public class AtaxxRules implements GameRules {
 				pos = i;
 			}
 		}
+		wonIndex = pos;
 		return playersPieces.get(pos);
 	}
 
+	/**
+	 * Complexity, twice linear, try to improve performance.
+	 * 
+	 * @param board
+	 * @param playersPieces
+	 * @return
+	 */
 	private boolean equalPoints(Board board, List<Piece> playersPieces) {
 		boolean equal = false;
+		// linear.
 		Piece winnerPiece = wonPlayer(board, playersPieces);
+		// linear again.
 		for (int i = 0; i < playersPieces.size(); i++) {
 			if (board.getPieceCount(playersPieces.get(i)) == board.getPieceCount(winnerPiece)
 					&& playersPieces.get(i).getId() != winnerPiece.getId()) {
@@ -276,7 +271,7 @@ public class AtaxxRules implements GameRules {
 			{ -1, -1 }, { -2, -2 }, { -2, -1 }, { -2, 0 }, { -2, 1 }, { -2, 2 }, { -1, -2 }, { -1, 2 }, { 0, -2 },
 			{ 0, 2 }, { 1, -2 }, { 1, 2 }, { 2, -2 }, { 2, -1 }, { 2, 0 }, { 2, 1 }, { 2, 2 } };
 
-	private boolean dentro(int x, int y) {
+	private boolean inBoard(int x, int y) {
 		return x >= 0 && y >= 0 && x < dim && y < dim;
 	}
 
@@ -289,12 +284,10 @@ public class AtaxxRules implements GameRules {
 					for (int[] ds : deltas) {
 						int x = i + ds[0];
 						int y = j + ds[1];
-						if (dentro(x, y) && board.getPosition(x, y) == null) {
+						if (inBoard(x, y) && board.getPosition(x, y) == null) {
 							moves.add(new AtaxxMove(i, j, x, y, turn));
 						}
-
 					}
-
 				}
 			}
 		}

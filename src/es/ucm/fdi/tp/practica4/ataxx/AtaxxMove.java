@@ -232,21 +232,17 @@ public class AtaxxMove extends GameMove {
 	 * Separating it from that method allows us to use this class for other
 	 * similar games by overriding this method.
 	 * 
-	 * <p>
-	 * Crea un nuevo movimiento con la misma ficha utilizada en el movimiento
-	 * actual. Llamado desde {@link #fromString(Piece, String)}; se separa este
-	 * metodo del anterior para permitir utilizar esta clase para otros juegos
-	 * similares sobrescribiendo este metodo.
-	 * 
+	 * @param oldRow
+	 *            row from we move
+	 * @param oldCol
+	 *            column from we move
 	 * @param row
-	 *            Row of the move being created.
-	 *            <p>
-	 *            Fila del nuevo movimiento.
-	 * 
+	 *            row where we move
 	 * @param col
-	 *            Column of the move being created.
-	 *            <p>
-	 *            Columna del nuevo movimiento.
+	 *            column where we move
+	 * @param p
+	 *            piece we move
+	 * @return an instance of AtaxxMove
 	 */
 	protected GameMove createMove(int oldRow, int oldCol, int row, int col, Piece p) {
 		return new AtaxxMove(oldRow, oldCol, row, col, p);
