@@ -183,8 +183,8 @@ public class AtaxxMove extends GameMove {
 			 * If is in, the position is not empty an is not an obstacle or a
 			 * piece of yours.
 			 */
-			Piece p = board.getPosition(x, y);
-			if (inBoard(x, y, board.getRows()) && p != null && !isObstacle(p) && p.getId() != getPiece().getId()) {
+			Piece p;
+			if (inBoard(x, y, board.getRows()) && (p = board.getPosition(x, y)) != null && !isObstacle(p) && p.getId() != getPiece().getId()) {
 				board.setPieceCount(p, board.getPieceCount(p) - 1);
 				board.setPieceCount(getPiece(), board.getPieceCount(getPiece()) + 1);
 				board.setPosition(x, y, getPiece());
